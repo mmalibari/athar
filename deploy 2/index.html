@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin=""><link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@400..800&amp;family=IBM+Plex+Sans+Arabic:wght@200;300;400;500;600;700&amp;family=Aref+Ruqaa:wght@400;700&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="./athar-sync.js"></script>
+<script src="./config.js"></script>
+<style>
+html,body{margin:0;background:#EAF3EF}
+*{box-sizing:border-box}
+a{color:#155E52}a:hover{color:#1E7A6B}
+button,input,textarea{font-family:inherit}
+input::placeholder,textarea::placeholder{color:rgba(23,32,27,.38)}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+@keyframes rise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+@keyframes grow{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes strike{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.7);opacity:.35}}
+@keyframes drift{from{transform:translate(0,0)}to{transform:translate(7px,-9px)}}
+@keyframes float{0%,100%{transform:translate(0,0) rotate(0deg)}50%{transform:translate(1.6cqw,-1.4cqw) rotate(8deg)}}
+@keyframes wobble{0%,100%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}}
+@keyframes wave{0%{transform:scale(.7);opacity:.9}100%{transform:scale(2.6);opacity:0}}
+@keyframes slidebar{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes pop{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:scale(1)}}
+</style>
+</helmet>
+<div dir="rtl" lang="ar" style="font-family:'IBM Plex Sans Arabic',system-ui,sans-serif;height:100dvh;display:flex;flex-direction:column;color:#123B35;background:#EAF3EF;overflow:hidden">
+
+<sc-if value="{{ showChrome }}" hint-placeholder-val="{{ true }}">
+<header style="flex:none;min-height:60px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 16px;padding:8px 22px;background:#F7FAF8;border-bottom:1px solid rgba(21,94,82,.1)">
+  <div style="display:flex;align-items:baseline;gap:12px;min-width:0;flex:1 1 160px">
+    <div style="display:flex;align-items:center;gap:10px"><span style="width:42px;height:42px;border-radius:14px;background:#155E52;color:#FFE7A3;display:flex;align-items:center;justify-content:center;font-family:'Baloo Bhaijaan 2',sans-serif;font-size:22px;font-weight:800;animation:wobble 6s ease-in-out infinite;box-shadow:0 8px 18px -8px rgba(21,94,82,.6)">أ</span><span style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:28px;font-weight:800;color:#155E52;line-height:1">أثر</span></div>
+    <div style="font-size:13px;color:#587470;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">ماذا تستطيع أن تفعل بكلمتك؟</div>
+  </div>
+  <sc-if value="{{ showTabs }}" hint-placeholder-val="{{ true }}">
+  <nav style="display:flex;gap:4px;background:rgba(21,94,82,.07);padding:4px;border-radius:999px">
+    <sc-for list="{{ modes }}" as="m" hint-placeholder-count="4">
+      <button onClick="{{ m.go }}" style="border:0;cursor:pointer;padding:8px 16px;border-radius:999px;font-size:14px;font-weight:700;background:{{ m.bg }};color:{{ m.fg }};transition:background .25s">{{ m.l }}</button>
+    </sc-for>
+  </nav>
+  </sc-if>
+  <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#155E52;font-weight:500;white-space:nowrap;min-width:0;overflow:hidden;flex:1 1 120px;justify-content:flex-end">
+    <span style="width:8px;height:8px;border-radius:50%;background:#3CC7B0;animation:pulse 2s infinite"></span>
+    <span style="overflow:hidden;text-overflow:ellipsis">{{ joinedLabel }}</span>
+  </div>
+</header>
+<div style="flex:none;position:relative;height:4px;display:flex"><span style="flex:1;background:#3CC7B0"></span><span style="flex:1;background:#FFE7A3"></span><span style="flex:1;background:#FFC9B5"></span><span style="flex:1;background:#DCD0F7"></span><div style="position:absolute;top:0;bottom:0;left:0;width:calc(100% - {{ progW }});background:rgba(255,255,255,.8);transition:width .8s cubic-bezier(.2,.8,.2,1)"></div></div>
+</sc-if>
+
+<sc-if value="{{ isWork }}" hint-placeholder-val="{{ true }}">
+<div style="flex:1;min-height:0;display:flex;flex-direction:{{ workDir }};gap:18px;padding:{{ workPad }};overflow:auto;background:{{ workBg }}">
+
+  <sc-if value="{{ isConsole }}" hint-placeholder-val="{{ true }}">
+  <aside style="width:{{ ctrlW }};flex:none;order:{{ ctrlOrder }};display:flex;flex-direction:column;gap:12px;overflow:auto;padding-bottom:12px">
+    <div style="background:#155E52;color:#F7FAF8;border-radius:24px;padding:20px;display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="font-size:12px;opacity:.65;font-weight:500">الآن على الشاشة</div>
+        <div style="font-size:12px;background:rgba(247,250,248,.12);padding:4px 10px;border-radius:999px">{{ beatLabel }}</div>
+      </div>
+      <div style="display:flex;align-items:flex-end;gap:12px">
+        <div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:44px;font-weight:900;line-height:.9;color:#8EE5D1;flex:none">{{ curNum }}</div>
+        <div style="display:flex;flex-direction:column;gap:2px;padding-bottom:4px;min-width:0">
+          <div style="font-size:12px;opacity:.6">{{ curCh }}</div>
+          <div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:16px;font-weight:800;line-height:1.3;text-wrap:balance">{{ cur.title }}</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:5px">
+        <sc-for list="{{ beatDots }}" as="d" hint-placeholder-count="3">
+          <span style="flex:1;height:4px;border-radius:4px;background:{{ d.bg }}"></span>
+        </sc-for>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 2fr;gap:8px">
+        <button onClick="{{ prev }}" style="border:1.5px solid rgba(247,250,248,.25);background:transparent;color:#F7FAF8;border-radius:16px;padding:14px;font-size:15px;font-weight:700;cursor:pointer">السابق</button>
+        <button onClick="{{ next }}" style="font-family:'Baloo Bhaijaan 2',sans-serif;border:0;background:#8EE5D1;color:#155E52;border-radius:16px;padding:14px;font-size:17px;font-weight:900;cursor:pointer;transition:transform .2s" style-hover="transform:translateY(-2px)">التالي ←</button>
+      </div>
+      <div style="font-size:12px;opacity:.55">بعدها: {{ nextTitle }}</div>
+    </div>
+
+    <sc-if value="{{ is.lobby }}" hint-placeholder-val="{{ false }}">
+    <div style="background:#FFFFFF;border-radius:24px;padding:18px;display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:15px;font-weight:800">من في الحصة</span><span style="font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;background:#8EE5D1;color:#155E52">{{ joinedCount }} / 20</span></div>
+      <div style="height:6px;border-radius:6px;background:rgba(21,94,82,.1);overflow:hidden"><div style="height:100%;width:{{ joinedPct }};background:#155E52;transition:width .5s"></div></div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px">
+        <sc-for list="{{ joinedList }}" as="j" hint-placeholder-count="6"><span style="font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px;background:{{ j.bg }};color:#123B35;animation:pop .4s both">{{ j.n }}</span></sc-for>
+      </div>
+      <div style="font-size:12px;color:#587470">ابدأ عندما يكتمل العدد. من يدخل متأخرًا يلحق بالنشاط الجاري تلقائيًا</div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ hasAct }}" hint-placeholder-val="{{ false }}">
+    <div style="background:#FFFFFF;border-radius:24px;padding:18px;display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:15px;font-weight:800">النشاط · {{ actKind }}</div>
+        <div style="font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;background:{{ actPillBg }};color:{{ actPillFg }}">{{ actStatus }}</div>
+      </div>
+      <button onClick="{{ toggleAct }}" style="font-family:'Baloo Bhaijaan 2',sans-serif;border:0;background:#155E52;color:#F7FAF8;border-radius:14px;padding:13px;font-size:15px;font-weight:800;cursor:pointer">{{ actBtn }}</button>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:#587470">وصل</span><span style="font-family:'Baloo Bhaijaan 2',sans-serif;font-weight:800">{{ actCount }} من 20</span></div>
+        <div style="height:6px;border-radius:6px;background:rgba(21,94,82,.1);overflow:hidden"><div style="height:100%;width:{{ actPct }};background:#155E52;transition:width .5s"></div></div>
+      </div>
+      <sc-if value="{{ actIsVote }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <sc-for list="{{ pVoteRows }}" as="r" hint-placeholder-count="3">
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <div style="display:flex;justify-content:space-between;font-size:13px"><span style="font-weight:700">{{ r.l }}</span><span style="color:#587470">{{ r.n }} · {{ r.pct }}</span></div>
+              <div style="height:8px;border-radius:8px;background:rgba(21,94,82,.08);overflow:hidden"><div style="height:100%;width:{{ r.pct }};background:#1E7A6B;border-radius:8px;transition:width .5s"></div></div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+      <sc-if value="{{ actIsText }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;color:#587470">اضغط على الإجابة لإظهارها على الشاشة</span><button onClick="{{ showAll }}" style="font-family:'Baloo Bhaijaan 2',sans-serif;border:0;background:none;color:#155E52;font-size:12px;font-weight:800;cursor:pointer">إظهار الكل</button></div>
+          <sc-for list="{{ respList }}" as="r" hint-placeholder-count="3">
+            <button onClick="{{ r.toggle }}" style="text-align:right;border:1.5px solid {{ r.bd }};background:{{ r.bg }};border-radius:14px;padding:10px 12px;cursor:pointer;display:flex;justify-content:space-between;gap:8px;align-items:center">
+              <span style="display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;font-weight:600;color:#123B35">{{ r.t }}</span><span style="font-size:11px;color:#587470">{{ r.a }}</span></span>
+              <span style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:11px;font-weight:800;color:{{ r.fg }};white-space:nowrap">{{ r.lbl }}</span>
+            </button>
+          </sc-for>
+          <sc-if value="{{ respEmpty }}" hint-placeholder-val="{{ true }}"><div style="font-size:13px;color:#587470;padding:10px 0">لم تصل إجابات بعد</div></sc-if>
+        </div>
+      </sc-if>
+      <sc-if value="{{ is.tone }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:8px;border-top:1px solid rgba(21,94,82,.1);padding-top:12px">
+          <div style="font-size:13px">الجولة <b>{{ toneN }}</b> من 5 · المتحدث: <b>{{ toneName }}</b> · المعنى: <b>{{ toneMeant }}</b></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <button onClick="{{ toggleReveal }}" style="font-family:'Baloo Bhaijaan 2',sans-serif;border:1.5px solid #155E52;background:transparent;color:#155E52;border-radius:12px;padding:10px;font-size:13px;font-weight:800;cursor:pointer">{{ revealBtn }}</button>
+            <button onClick="{{ nextRound }}" style="font-family:'Baloo Bhaijaan 2',sans-serif;border:0;background:#8EE5D1;color:#155E52;border-radius:12px;padding:10px;font-size:13px;font-weight:800;cursor:pointer">الجولة التالية</button>
+          </div>
+        </div>
+      </sc-if>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ hasTimer }}" hint-placeholder-val="{{ false }}">
+    <div style="background:#FFFFFF;border-radius:24px;padding:18px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px">
+      <div style="display:flex;flex-direction:column"><span style="font-size:12px;color:#587470">المؤقت</span><span style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:34px;font-weight:800;color:#155E52;font-variant-numeric:tabular-nums">{{ timerText }}</span></div>
+      <div style="display:flex;gap:6px">
+        <button onClick="{{ toggleTimer }}" style="font-family:'Baloo Bhaijaan 2',sans-serif;border:0;background:#155E52;color:#F7FAF8;border-radius:12px;padding:11px 16px;font-size:14px;font-weight:800;cursor:pointer">{{ timerBtn }}</button>
+        <button onClick="{{ resetTimer }}" style="border:1.5px solid rgba(21,94,82,.25);background:transparent;color:#155E52;border-radius:12px;padding:11px 12px;font-size:14px;font-weight:700;cursor:pointer">إعادة</button>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ is.speak }}" hint-placeholder-val="{{ false }}">
+    <div style="background:#FFFFFF;border-radius:24px;padding:18px;display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:15px;font-weight:800">دقيقتان · {{ spk.n }} / 20</span><span style="font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;background:#8EE5D1;color:#155E52">{{ spPhaseLabel }}</span></div>
+      <div style="display:flex;flex-direction:column;gap:2px">
+        <div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:26px;font-weight:900;color:#155E52">{{ spk.name }}</div>
+        <div style="font-size:13px;color:#587470">{{ spReadyLabel }}</div>
+      </div>
+      <sc-if value="{{ spPhase.speaking }}" hint-placeholder-val="{{ false }}"><div style="font-size:40px;font-weight:300;color:#155E52;font-variant-numeric:tabular-nums">{{ timerText }}</div></sc-if>
+      <button onClick="{{ spMain }}" style="font-family:'Baloo Bhaijaan 2',sans-serif;border:0;background:#155E52;color:#F7FAF8;border-radius:14px;padding:14px;font-size:16px;font-weight:900;cursor:pointer">{{ spMainLabel }}</button>
+      <sc-if value="{{ spPhase.feedback }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:#587470">أرسلوا الأثر</span><b>{{ sp.fb }} / 19</b></div>
+          <div style="display:flex;flex-wrap:wrap;gap:4px">
+            <sc-for list="{{ fbList }}" as="f" hint-placeholder-count="19">
+              <span style="font-size:11px;padding:3px 8px;border-radius:999px;background:{{ f.bg }};color:{{ f.fg }}">{{ f.n }}</span>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:4px;border-top:1px solid rgba(21,94,82,.1);padding-top:12px">
+        <sc-for list="{{ spkGrid }}" as="g" hint-placeholder-count="20">
+          <button onClick="{{ g.go }}" title="{{ g.name }}" style="border:1.5px solid {{ g.bd }};background:{{ g.bg }};color:{{ g.fg }};border-radius:10px;padding:6px 0;font-size:11px;font-weight:700;cursor:pointer;overflow:hidden;white-space:nowrap">{{ g.name }}</button>
+        </sc-for>
+      </div>
+      <button onClick="{{ goImpact }}" style="font-family:'Baloo Bhaijaan 2',sans-serif;border:1.5px solid #155E52;background:transparent;color:#155E52;border-radius:14px;padding:11px;font-size:14px;font-weight:800;cursor:pointer">فتح شاشة الأثر النهائية</button>
+    </div>
+    </sc-if>
+
+    <div style="background:#FFFFFF;border-radius:24px;padding:14px;display:flex;flex-direction:column;gap:2px">
+      <div style="font-size:12px;color:#587470;padding:4px 8px 8px">فصول الحقيبة</div>
+      <sc-for list="{{ chapters }}" as="c" hint-placeholder-count="12">
+        <button onClick="{{ c.go }}" style="display:flex;gap:12px;align-items:center;border:0;background:{{ c.bg }};color:{{ c.fg }};border-radius:12px;padding:8px 10px;cursor:pointer;text-align:right">
+          <span style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:13px;font-weight:900;width:26px;opacity:.7">{{ c.n }}</span><span style="font-size:14px;font-weight:600">{{ c.name }}</span>
+        </button>
+      </sc-for>
+    </div>
+    <sc-if value="{{ isLiveCtrl }}" hint-placeholder-val="{{ false }}">
+    <div style="background:#FFFFFF;border-radius:24px;padding:16px;display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700"><span style="width:8px;height:8px;border-radius:50%;background:{{ liveDot }}"></span>{{ liveMsg }}</div>
+      <div style="font-size:12px;color:#587470;line-height:1.8;word-break:break-all">الطلاب: <b dir="ltr" style="color:#155E52">{{ joinUrl }}</b><br>الشاشة: <b dir="ltr" style="color:#155E52">{{ presentUrl }}</b></div>
+      <button onClick="{{ resetSession }}" style="border:1.5px solid #B4432F;background:transparent;color:#B4432F;border-radius:12px;padding:10px;font-size:13px;font-weight:700;cursor:pointer">مسح بيانات الجلسة</button>
+    </div>
+    </sc-if>
+  </aside>
+  </sc-if>
+
+  <sc-if value="{{ showStage }}" hint-placeholder-val="{{ true }}">
+  <main style="flex:{{ mainFlex }};min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px">
+    <div style="position:relative;width:{{ stageW }};aspect-ratio:16/9;container-type:inline-size;overflow:hidden;border-radius:{{ stageR }};background:#F7FAF8;box-shadow:0 30px 80px -30px rgba(21,94,82,.45);user-select:none">
+
+      <sc-if value="{{ is.lobby }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;background:#F7FAF8;display:grid;grid-template-columns:1fr 1fr;animation:fadein .7s both">
+        <div style="position:relative;padding:0 7cqw 0 3cqw;display:flex;flex-direction:column;justify-content:center;gap:2cqw">
+          <div style="position:absolute;top:6cqw;right:30cqw;width:6cqw;height:6cqw;border-radius:50%;background:#FFE7A3;animation:float 8s ease-in-out infinite"></div>
+          <span style="align-self:flex-start;font-size:1.4cqw;font-weight:700;padding:.5cqw 1.4cqw;border-radius:99px;background:#CFF1E8;color:#155E52">قبل أن نبدأ</span>
+          <div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:6.4cqw;font-weight:800;line-height:1.1;color:#155E52;animation:rise .9s both">ادخل <span style="background:linear-gradient(transparent 58%,#8EE5D1 58% 88%,transparent 88%);padding:0 .6cqw">باسمك</span></div>
+          <div style="font-size:2.2cqw;line-height:1.5;color:#34514C">امسح الرمز من جوالك، واكتب اسمك</div>
+          <div style="width:13cqw;aspect-ratio:1;border-radius:2cqw;background:#FFFFFF;border:.2cqw dashed rgba(21,94,82,.35);display:flex;align-items:center;justify-content:center;font-size:1.3cqw;color:#587470;transform:rotate(-2deg)"><sc-if value="{{ hasQr }}" hint-placeholder-val="{{ false }}"><img src="{{ qrSrc }}" alt="" style="width:86%;height:86%;border-radius:1cqw"></sc-if><sc-if value="{{ noQr }}" hint-placeholder-val="{{ true }}"><span>رمز QR للجلسة</span></sc-if></div><sc-if value="{{ hasQr }}" hint-placeholder-val="{{ false }}"><div dir="ltr" style="font-size:1.7cqw;font-weight:600;color:#155E52">{{ joinUrl }}</div></sc-if>
+        </div>
+        <div style="margin:2.4cqw;border-radius:2.6cqw;background:#155E52;color:#F7FAF8;padding:3.4cqw;display:flex;flex-direction:column;gap:2cqw;overflow:hidden">
+          <div style="display:flex;align-items:baseline;gap:1.2cqw"><span style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:9cqw;font-weight:800;line-height:1.1;color:#FFFFFF;-webkit-text-stroke:.5cqw #3CC7B0;paint-order:stroke fill;font-variant-numeric:tabular-nums">{{ joinedCount }}</span><span style="font-size:2.2cqw;opacity:.8">من 20 في الحصة</span></div>
+          <div style="flex:1;display:flex;flex-wrap:wrap;align-content:flex-start;gap:.8cqw">
+            <sc-for list="{{ joinedList }}" as="j" hint-placeholder-count="0"><span style="font-size:2cqw;font-weight:700;padding:.5cqw 1.5cqw;border-radius:99px;background:{{ j.bgDark }};color:{{ j.fg }};animation:pop .6s cubic-bezier(.2,.8,.2,1.3) both">{{ j.n }}</span></sc-for>
+          </div>
+        </div>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ is.hook }}" hint-placeholder-val="{{ true }}">
+      <div style="position:absolute;inset:0;background:#F7FAF8;padding:0 8cqw;display:flex;flex-direction:column;justify-content:center;gap:1.6cqw;animation:fadein .7s both">
+        <div style="position:absolute;top:-7cqw;left:-6cqw;width:30cqw;height:30cqw;border-radius:42% 58% 63% 37%/45% 40% 60% 55%;background:#CFF1E8;animation:float 10s ease-in-out infinite"></div><div style="position:absolute;bottom:5cqw;left:30cqw;width:7cqw;height:7cqw;border-radius:50%;background:#FFE7A3;animation:float 7s ease-in-out -2s infinite"></div><div style="position:absolute;top:8cqw;right:46cqw;width:3cqw;height:3cqw;border-radius:50%;background:#FFC9B5;animation:float 6s ease-in-out -4s infinite"></div>
+        <div style="font-family:'Baloo Bhaijaan 2',sans-serif;position:relative;font-size:10.5cqw;font-weight:900;line-height:1.05;color:#155E52;letter-spacing:-.15cqw;animation:rise .9s .1s both">عندك 30 ثانية</div>
+        <div style="position:relative;font-size:4.6cqw;font-weight:300;animation:rise .9s .35s both">أقنعني بشيء تحبه</div>
+        <div style="position:relative;display:flex;flex-wrap:wrap;gap:1cqw;margin-top:2.4cqw;max-width:58cqw;animation:rise .9s .6s both">
+          <span style="padding:.7cqw 1.8cqw;border-radius:99px;background:#8EE5D1;font-size:1.8cqw;font-weight:600;transform:rotate(-3deg)">مكان</span>
+          <span style="padding:.7cqw 1.8cqw;border-radius:99px;background:#FFC9B5;font-size:1.8cqw;font-weight:600;transform:rotate(2deg)">أكلة</span>
+          <span style="padding:.7cqw 1.8cqw;border-radius:99px;background:#CFF1E8;font-size:1.8cqw;font-weight:600">فريق</span>
+          <span style="padding:.7cqw 1.8cqw;border-radius:99px;background:#DCD0F7;font-size:1.8cqw;font-weight:600;transform:rotate(-2deg)">لعبة</span>
+          <span style="padding:.7cqw 1.8cqw;border-radius:99px;background:#FFE7A3;font-size:1.8cqw;font-weight:600;transform:rotate(3deg)">هواية</span>
+          <span style="padding:.7cqw 1.8cqw;border-radius:99px;background:#FFFFFF;font-size:1.8cqw;font-weight:600">تجربة</span>
+          <span style="padding:.7cqw 1.8cqw;border-radius:99px;background:#155E52;color:#F7FAF8;font-size:1.8cqw;font-weight:600;transform:rotate(-1deg)">أي شيء</span>
+        </div>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ is.vote1 }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;background:#F7FAF8;padding:7cqw 7cqw 5cqw;display:flex;flex-direction:column;gap:3cqw;animation:fadein .7s both">
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:2cqw">
+          <div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:6.4cqw;font-weight:900;color:#155E52;line-height:1">مين أقنعك أكثر؟</div>
+          <div style="font-size:1.5cqw;color:#587470;display:flex;align-items:center;gap:.6cqw"><span style="width:.7cqw;height:.7cqw;border-radius:50%;background:#3CC7B0;animation:pulse 1.6s infinite"></span>{{ votedLabel }}</div>
+        </div>
+        <div style="flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:2.4cqw;min-height:0">
+          <sc-for list="{{ vote1Rows }}" as="r" hint-placeholder-count="3">
+            <div style="display:flex;flex-direction:column;gap:.8cqw;min-height:0">
+              <div style="position:relative;flex:1;border-radius:2.2cqw;background:rgba(21,94,82,.07);overflow:hidden;display:flex;align-items:flex-end">
+                <div style="width:100%;height:{{ r.h }};background:{{ r.c }};border-radius:2.2cqw;transition:height .7s cubic-bezier(.2,.8,.2,1)"></div>
+                <div style="font-family:'Baloo Bhaijaan 2',sans-serif;position:absolute;top:1.4cqw;right:1.8cqw;font-size:4.4cqw;font-weight:900;color:#155E52;mix-blend-mode:multiply">{{ r.pct }}</div>
+              </div>
+              <div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:3cqw;font-weight:900;line-height:1.1">{{ r.l }}</div>
+              <div style="font-size:1.5cqw;color:#587470">{{ r.s }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ is.why }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;background:#155E52;color:#F7FAF8;animation:fadein .7s both">
+        <div style="font-family:'Baloo Bhaijaan 2',sans-serif;position:absolute;right:7cqw;top:50%;transform:translateY(-50%);font-size:22cqw;font-weight:900;line-height:1;color:#FFFFFF;-webkit-text-stroke:.7cqw #3CC7B0;paint-order:stroke fill;animation:rise 1s both">ليش؟</div>
+        <div style="position:absolute;left:6cqw;top:9cqw;bottom:6cqw;width:48cqw;display:flex;flex-wrap:wrap;align-content:center;justify-content:center;gap:1cqw">
+          <sc-for list="{{ whyWords }}" as="w" hint-placeholder-count="0">
+            <span style="font-size:{{ w.size }};font-weight:700;color:{{ w.c }};padding:.35em .9em;border-radius:99px;border:1px solid rgba(247,250,248,.22);background:rgba(247,250,248,.05);animation:pop .6s cubic-bezier(.2,.8,.2,1.3) both">{{ w.t }}</span>
+          </sc-for>
+          <sc-if value="{{ whyEmpty }}" hint-placeholder-val="{{ true }}"><span style="font-size:1.6cqw;opacity:.45">إجاباتكم تظهر هنا</span></sc-if>
+        </div>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ is.army }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;background:#0F443C;color:#F7FAF8;animation:fadein 1s both">
+        <div style="position:absolute;left:0;right:0;bottom:0;height:17cqw;background:repeating-linear-gradient(90deg,rgba(247,250,248,.16) 0 .22cqw,transparent .22cqw 1.9cqw);-webkit-mask-image:linear-gradient(to top,#000 30%,transparent);mask-image:linear-gradient(to top,#000 30%,transparent)"></div>
+        <div style="position:absolute;left:0;right:0;bottom:0;height:.15cqw;background:rgba(247,250,248,.25)"></div>
+        <sc-if value="{{ b.b5 }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;bottom:0;left:50%;width:.5cqw;height:30cqw;background:#8EE5D1;transform-origin:bottom;animation:grow 1.4s cubic-bezier(.2,.8,.2,1) both;border-radius:1cqw"></div></sc-if>
+        <div style="position:absolute;right:8cqw;top:7cqw;display:flex;flex-direction:column;gap:.6cqw;font-size:3.3cqw;font-weight:300;line-height:1.3;opacity:{{ armyDim }};transition:opacity 1s">
+          <div style="animation:rise 1s both">جيش واقف قبل المعركة</div>
+          <sc-if value="{{ b.b1 }}" hint-placeholder-val="{{ false }}"><div style="animation:rise 1s both">السلاح موجود</div></sc-if>
+          <sc-if value="{{ b.b2 }}" hint-placeholder-val="{{ false }}"><div style="animation:rise 1s both">الخيل موجودة</div></sc-if>
+          <sc-if value="{{ b.b3 }}" hint-placeholder-val="{{ false }}"><div style="animation:rise 1s both">الخطة معروفة</div></sc-if>
+          <sc-if value="{{ b.b4 }}" hint-placeholder-val="{{ false }}"><div style="animation:rise 1s both;color:#FFC9B5">والعدو أمامهم</div></sc-if>
+        </div>
+        <sc-if value="{{ b.b5 }}" hint-placeholder-val="{{ false }}"><div style="font-family: 'Baloo Bhaijaan 2',sans-serif; position: absolute; left: 8cqw; top: 12cqw; font-size: 6.6cqw; font-weight: 900; line-height: 1.15; color: #8EE5D1; animation: rise 1.2s .5s both; text-align: right">ويقف القائد …<br>ويتكـــــــــــــــلم</div></sc-if>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ is.soldier }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;background:#155E52;color:#F7FAF8;padding:0 9cqw;display:flex;flex-direction:column;justify-content:center;gap:1.2cqw;animation:fadein .8s both">
+        <div style="position:absolute;right:5cqw;top:14cqw;bottom:14cqw;width:.25cqw;background:rgba(217,238,140,.5)"></div>
+        <div style="font-size:4.2cqw;font-weight:300;animation:rise 1s both">الجندي يعرف أصلًا أنه داخل معركة</div>
+        <sc-if value="{{ b.b1 }}" hint-placeholder-val="{{ false }}"><div style="font-size:4.2cqw;font-weight:300;animation:rise 1s both">يعرف الخطر</div></sc-if>
+        <sc-if value="{{ b.b2 }}" hint-placeholder-val="{{ false }}"><div style="font-size:4.2cqw;font-weight:300;animation:rise 1s both">ويعرف المطلوب منه</div></sc-if>
+        <sc-if value="{{ b.b3 }}" hint-placeholder-val="{{ false }}"><div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:6cqw;font-weight:900;color:#8EE5D1;margin-top:2cqw;animation:rise 1.1s both">ومع ذلك كان للكلمة مكانها</div></sc-if>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ is.know }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;background:#F7FAF8;padding:0 8cqw;display:flex;flex-direction:column;justify-content:center;gap:1cqw;animation:fadein .8s both">
+        <div style="position:absolute;bottom:-9cqw;left:6cqw;width:26cqw;height:26cqw;border-radius:50%;background:#DCD0F7;mix-blend-mode:multiply;animation:float 11s ease-in-out infinite"></div><div style="position:absolute;top:8cqw;left:8cqw;padding:.8cqw 1.6cqw;background:#FFE7A3;animation:wobble 5s ease-in-out infinite;font-size:1.4cqw;font-weight:700;transform:rotate(-4deg);border-radius:.6cqw;box-shadow:0 .6cqw 1.6cqw -.6cqw rgba(0,0,0,.25)">الفكرة الأساسية</div>
+        <div style="font-size:7cqw;font-weight:300;line-height:1.15;animation:rise 1s both">الإنسان قد يعرف…</div>
+        <sc-if value="{{ b.b1 }}" hint-placeholder-val="{{ false }}"><div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:11.5cqw;font-weight:900;line-height:1.05;color:#155E52;letter-spacing:-.2cqw;animation:rise 1.1s both">ولم <span style="background:linear-gradient(transparent 60%,#8EE5D1 60% 90%,transparent 90%);padding:0 .8cqw">يتحرك</span> بعد</div></sc-if>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ is.hadith }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;background:#155E52;color:#F7FAF8;animation:fadein .8s both">
+        <sc-if value="{{ be.e0 }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;inset:0;padding:0 12cqw;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:2.4cqw;animation:fadein 1.2s both">
+          <div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:9cqw;line-height:.6;color:#8EE5D1;font-weight:900">«</div>
+          <div style="font-size:3.4cqw;font-weight:400;line-height:1.75;text-wrap:balance">كان رسول الله ﷺ إذا خطب احمرّت عيناه، وعلا صوته، واشتد غضبه، حتى كأنه منذر جيش يقول: صبّحكم ومسّاكم</div>
+          <div style="display:flex;gap:1.4cqw;align-items:center;font-size:1.5cqw;opacity:.8"><span>جابر بن عبدالله رضي الله عنه</span><span style="width:.4cqw;height:.4cqw;border-radius:50%;background:#8EE5D1"></span><span style="color:#8EE5D1;font-weight:700">رواه مسلم</span></div>
+        </div>
+        </sc-if>
+        <sc-if value="{{ be.e1 }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;inset:0;padding:8cqw 8cqw 6cqw;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:1.4cqw">
+          <div style="border-radius:2.4cqw;border:1px solid rgba(247,250,248,.18);padding:2.4cqw;display:flex;flex-direction:column;justify-content:space-between;animation:rise .9s .0s both"><span style="font-size:1.3cqw;color:#8EE5D1">01</span><span style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:5.6cqw;font-weight:900">احمرّت عيناه</span></div>
+          <div style="border-radius:2.4cqw;border:1px solid rgba(247,250,248,.18);padding:2.4cqw;display:flex;flex-direction:column;justify-content:space-between;animation:rise .9s .25s both"><span style="font-size:1.3cqw;color:#8EE5D1">02</span><span style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:5.6cqw;font-weight:900">علا صوته</span></div>
+          <div style="border-radius:2.4cqw;border:1px solid rgba(247,250,248,.18);padding:2.4cqw;display:flex;flex-direction:column;justify-content:space-between;animation:rise .9s .5s both"><span style="font-size:1.3cqw;color:#8EE5D1">03</span><span style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:5.6cqw;font-weight:900">اشتد غضبه</span></div>
+          <div style="border-radius:2.4cqw;background:#8EE5D1;color:#155E52;padding:2.4cqw;display:flex;flex-direction:column;justify-content:space-between;animation:rise .9s .75s both"><span style="font-size:1.3cqw">04</span><span style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:5.6cqw;font-weight:900">كأنه منذر جيش</span></div>
+        </div>
+        </sc-if>
+        <sc-if value="{{ be.e2 }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;inset:0;padding:0 9cqw;display:flex;flex-direction:column;justify-content:center;gap:1cqw">
+          <div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:6cqw;font-weight:900;line-height:1.2;animation:rise 1s both">كان المعنى حاضرًا فيه ﷺ</div>
+          <div style="font-size:6cqw;font-weight:300;line-height:1.2;color:#8EE5D1;animation:rise 1s .5s both">قبل أن يصل إلى من أمامه</div>
+        </div>
+        </sc-if>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ openBig }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;background:#F7FAF8;padding:0 9cqw;display:flex;flex-direction:column;justify-content:center;gap:2cqw;animation:fadein .8s both">
+        <div style="font-size:1.6cqw;font-weight:700;color:#155E52;display:flex;gap:.8cqw;align-items:center"><span style="width:2.4cqw;height:.2cqw;background:#155E52"></span>فكرة واحدة</div>
+        <div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:7.4cqw;font-weight:900;line-height:1.12;color:#155E52;text-wrap:balance;animation:rise 1s both">الجوال يأخذ من وقتنا أكثر مما يستحق</div>
+      </div>
+      </sc-if>
+      <sc-if value="{{ showOpenGrid }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;background:#F7FAF8;padding:6cqw 6cqw 4.5cqw;display:flex;flex-direction:column;gap:2.4cqw;animation:fadein .6s both">
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:2cqw">
+          <sc-if value="{{ is.vote2 }}" hint-placeholder-val="{{ false }}"><div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:4.4cqw;font-weight:900;color:#155E52;line-height:1.1">أي بداية خلتك تبغى تسمع الباقي؟</div></sc-if>
+          <sc-if value="{{ is.open4 }}" hint-placeholder-val="{{ false }}"><div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:3.2cqw;font-weight:800;color:#155E52;line-height:1.2">الجوال يأخذ من وقتنا أكثر مما يستحق<span style="display:block;font-size:1.7cqw;font-weight:400;color:#587470;margin-top:.6cqw">فكرة واحدة أربع طرق لفتحها</span></div></sc-if>
+          <sc-if value="{{ is.vote2 }}" hint-placeholder-val="{{ false }}"><div style="font-size:1.5cqw;color:#587470;white-space:nowrap">{{ votedLabel2 }}</div></sc-if>
+        </div>
+        <div style="flex:1;display:grid;grid-template-columns:repeat(4,1fr);gap:1.6cqw;min-height:0">
+          <sc-for list="{{ openRows }}" as="o" hint-placeholder-count="4">
+            <div style="position:relative;background:{{ o.c }};border-radius:2.2cqw;padding:2cqw;display:flex;flex-direction:column;gap:1.2cqw;overflow:hidden;transform:rotate({{ o.rot }});animation:rise .8s both;animation-delay:{{ o.delay }}">
+              <div style="position:absolute;left:0;right:0;bottom:0;height:{{ o.fill }};background:rgba(21,94,82,.14);transition:height .7s cubic-bezier(.2,.8,.2,1)"></div>
+              <div style="position:relative;display:flex;justify-content:space-between;align-items:center"><span style="font-size:1.3cqw;font-weight:700">{{ o.num }}</span><sc-if value="{{ o.show }}" hint-placeholder-val="{{ false }}"><span style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:3.2cqw;font-weight:900;color:#155E52">{{ o.pct }}</span></sc-if></div>
+              <div style="font-family:'Baloo Bhaijaan 2',sans-serif;position:relative;font-size:3cqw;font-weight:900;color:#155E52">{{ o.k }}</div>
+              <div style="position:relative;font-size:1.9cqw;font-weight:500;line-height:1.55">«{{ o.t }}»</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ is.human }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;background:#155E52;color:#F7FAF8;padding:0 9cqw;display:flex;flex-direction:column;justify-content:center;gap:2cqw;animation:fadein .8s both">
+        <div style="position:relative;align-self:flex-start;font-size:5.4cqw;font-weight:300;opacity:.6;animation:rise 1s both">لا تبدأ من الموضوع
+          <sc-if value="{{ b.b1 }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;right:0;left:0;top:55%;height:.35cqw;background:#FFC9B5;transform-origin:right;animation:strike .8s cubic-bezier(.6,0,.2,1) both"></span></sc-if>
+        </div>
+        <sc-if value="{{ b.b1 }}" hint-placeholder-val="{{ false }}"><div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:11.5cqw;font-weight:900;line-height:1.05;color:#8EE5D1;letter-spacing:-.2cqw;animation:rise 1.1s .5s both">ابدأ من الإنسان</div></sc-if>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ is.fear }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;background:#F7FAF8;animation:fadein .8s both">
+        <div style="position:absolute;right:7cqw;top:0;bottom:0;width:{{ titleW }};display:flex;flex-direction:column;justify-content:center;gap:2.4cqw;transition:width .8s">
+          <div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:7cqw;font-weight:900;line-height:1.1;color:#155E52;animation:rise 1s both">كان خائفًا جدًا</div>
+          <sc-if value="{{ b.b1 }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;gap:1.4cqw;animation:rise .9s both">
+            <div style="font-size:1.8cqw;color:#587470">ممنوع تستخدم كلمة:</div>
+            <div style="display:flex;gap:1.4cqw">
+              <span style="font-family:'Baloo Bhaijaan 2',sans-serif;position:relative;font-size:3.4cqw;font-weight:800;color:#B4432F;border:.25cqw solid #B4432F;border-radius:1.2cqw;padding:.2cqw 1.6cqw;transform:rotate(-4deg)">خائف<span style="position:absolute;right:8%;left:8%;top:50%;height:.3cqw;background:#B4432F;transform-origin:right;animation:strike .6s .4s both"></span></span>
+              <span style="font-family:'Baloo Bhaijaan 2',sans-serif;position:relative;font-size:3.4cqw;font-weight:800;color:#B4432F;border:.25cqw solid #B4432F;border-radius:1.2cqw;padding:.2cqw 1.6cqw;transform:rotate(3deg)">خوف<span style="position:absolute;right:8%;left:8%;top:50%;height:.3cqw;background:#B4432F;transform-origin:right;animation:strike .6s .6s both"></span></span>
+            </div>
+            <div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:3.6cqw;font-weight:800;line-height:1.2;margin-top:1cqw">خلّني أعرف أنه خائف</div>
+          </div>
+          </sc-if>
+        </div>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ is.time }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;background:#F7FAF8;animation:fadein .8s both">
+        <div style="position:absolute;right:7cqw;top:0;bottom:0;width:{{ titleW }};display:flex;flex-direction:column;justify-content:center;gap:2.4cqw;transition:width .8s">
+          <div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:7cqw;font-weight:900;line-height:1.1;color:#155E52;animation:rise 1s both">الوقت يمر بسرعة</div>
+          <div style="font-size:3.2cqw;font-weight:400;line-height:1.4;animation:rise 1s .3s both">كيف تجعلني <span style="font-family:'Baloo Bhaijaan 2',sans-serif;background:#8EE5D1;padding:0 .6cqw;border-radius:.6cqw;font-weight:800">أراه</span><br>بدل أن تخبرني؟</div>
+        </div>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ is.image }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;background:#155E52;color:#F7FAF8;animation:fadein .8s both">
+        <sc-if value="{{ be.e0 }}" hint-placeholder-val="{{ false }}"><div style="font-family:'Baloo Bhaijaan 2',sans-serif;position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:14cqw;font-weight:900;letter-spacing:-.3cqw;animation:rise 1.1s both">الصورة تبقى</div></sc-if>
+        <sc-if value="{{ be.e1 }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;inset:0;padding:0 9cqw;display:flex;flex-direction:column;justify-content:center;gap:3cqw">
+          <div style="display:flex;flex-direction:column;gap:.8cqw;animation:rise .9s both">
+            <span style="font-size:1.6cqw;color:#8EE5D1;font-weight:700">بدل:</span>
+            <span style="position:relative;align-self:flex-start;font-size:2.8cqw;opacity:.5">«التنمر يؤثر نفسيًا على الإنسان»<span style="position:absolute;right:0;left:0;top:55%;height:.2cqw;background:#F7FAF8;transform-origin:right;animation:strike .7s .6s both"></span></span>
+          </div>
+          <div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:5cqw;font-weight:800;line-height:1.35;animation:rise 1.1s .9s both">يمكن أنت نسيت الكلمة اللي قلتها له في الفسحة…<br><span style="color:#8EE5D1">وهو إلى اليوم يتذكرها</span></div>
+        </div>
+        </sc-if>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ is.story }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;background:#F7FAF8;animation:fadein .8s both">
+        <sc-if value="{{ be.e0 }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;inset:0;padding:0 9cqw;display:flex;flex-direction:column;justify-content:center;gap:1cqw">
+          <div style="font-size:6cqw;font-weight:300;animation:rise 1s both">القصة ما تحتاج:</div>
+          <div style="font-family:'Baloo Bhaijaan 2',sans-serif;position:relative;align-self:flex-start;font-size:10cqw;font-weight:900;color:#155E52;line-height:1.1;animation:rise 1s .3s both">«كان يا ما كان»<span style="position:absolute;right:-1cqw;left:-1cqw;top:52%;height:1.2cqw;background:#8EE5D1;mix-blend-mode:multiply;transform-origin:right;animation:strike .8s 1.1s cubic-bezier(.6,0,.2,1) both;border-radius:1cqw"></span></div>
+        </div>
+        </sc-if>
+        <sc-if value="{{ be.e1 }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;inset:0;padding:0 9cqw;display:flex;flex-direction:column;justify-content:center;gap:1.4cqw">
+          <div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:5.4cqw;font-weight:800;line-height:1.3;color:#155E52;animation:rise 1s both">«دخلت الفصل يومًا…</div>
+          <div style="font-size:5.4cqw;font-weight:300;line-height:1.3;animation:rise 1s .8s both">ولقيت واحد من أصحابي جالس لحاله»</div>
+        </div>
+        </sc-if>
+        <sc-if value="{{ be.e2 }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;inset:0;padding:0 9cqw;display:flex;flex-direction:column;justify-content:center;gap:4cqw">
+          <div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:11cqw;font-weight:900;color:#155E52;line-height:1;animation:rise 1s both">أنا الآن معك</div>
+          <div style="display:flex;align-items:center;gap:1.4cqw;font-size:1.9cqw;font-weight:600;animation:rise 1s .5s both">
+            <span style="padding:1cqw 2cqw;border-radius:99px;background:#FFE7A3">موقف من 15 إلى 20 ثانية</span>
+            <span style="flex:none;width:5cqw;height:.2cqw;background:#155E52"></span>
+            <span style="padding:1cqw 2cqw;border-radius:99px;background:#CFF1E8">المستمع داخل المشهد</span>
+            <span style="flex:none;width:5cqw;height:.2cqw;background:#155E52"></span>
+            <span style="padding:1cqw 2cqw;border-radius:99px;background:#155E52;color:#F7FAF8">داخل الفكرة</span>
+          </div>
+        </div>
+        </sc-if>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ is.storych }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;background:#F7FAF8;animation:fadein .8s both">
+        <div style="position:absolute;right:7cqw;top:0;bottom:0;width:52cqw;display:flex;flex-direction:column;justify-content:center;gap:2cqw">
+          <div style="display:flex;gap:1cqw;align-items:center"><span style="font-size:1.4cqw;font-weight:700;padding:.5cqw 1.4cqw;border-radius:99px;background:#8EE5D1">تحدٍ سريع</span><span style="font-size:1.4cqw;color:#587470">في مجموعات صغيرة</span></div>
+          <div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:6.4cqw;font-weight:900;line-height:1.05;color:#155E52">عندك 30 ثانية</div>
+          <div style="font-size:2.3cqw">حوّل إحدى هذه الأفكار إلى موقف:</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2cqw">
+            <div style="font-family:'Baloo Bhaijaan 2',sans-serif;background:#FFFFFF;border-radius:1.6cqw;padding:1.6cqw 2cqw;font-size:2.4cqw;font-weight:800;transform:rotate(-1.5deg);animation:rise .7s .1s both">اختيار الصديق</div>
+            <div style="font-family:'Baloo Bhaijaan 2',sans-serif;background:#FFC9B5;border-radius:1.6cqw;padding:1.6cqw 2cqw;font-size:2.4cqw;font-weight:800;transform:rotate(1deg);animation:rise .7s .2s both">التأجيل</div>
+            <div style="font-family:'Baloo Bhaijaan 2',sans-serif;background:#CFF1E8;border-radius:1.6cqw;padding:1.6cqw 2cqw;font-size:2.4cqw;font-weight:800;transform:rotate(1.5deg);animation:rise .7s .3s both">فرصة ضاعت</div>
+            <div style="font-family:'Baloo Bhaijaan 2',sans-serif;background:#DCD0F7;border-radius:1.6cqw;padding:1.6cqw 2cqw;font-size:2.4cqw;font-weight:800;transform:rotate(-1deg);animation:rise .7s .4s both">موقف لن تنساه</div>
+          </div>
+        </div>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ hasTimer }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;left:7cqw;top:50%;transform:translateY(-50%);width:{{ ringSize }};aspect-ratio:1;border-radius:50%;background:conic-gradient(#155E52 {{ timerDeg }}, rgba(21,94,82,.1) 0);display:flex;align-items:center;justify-content:center;transition:width .6s;z-index:2">
+        <div style="position:absolute;inset:1.1cqw;border-radius:50%;background:#F7FAF8"></div>
+        <div style="position:relative;display:flex;flex-direction:column;align-items:center"><span style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:7cqw;font-weight:900;color:#155E52;line-height:1.25;font-variant-numeric:tabular-nums">{{ timerSec }}</span><span style="font-size:1.3cqw;color:#587470">ثانية</span></div>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ is.poem }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;background:#0F443C;color:#F7FAF8;animation:fadein 1.2s both">
+        <div style="position:absolute;inset:0 6cqw 12cqw;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:1.4cqw;text-align:center">
+          <div style="font-family:'Aref Ruqaa',serif;font-size:6.6cqw;font-weight:700;line-height:1.5;animation:rise 1.2s both">الرأي قبل شجاعة الشجعانِ</div>
+          <div style="font-family:'Aref Ruqaa',serif;font-size:6.6cqw;font-weight:700;line-height:1.5;color:#8EE5D1;animation:rise 1.2s .6s both">هو أولٌ وهي المحلُّ الثاني</div>
+          <div style="font-size:1.5cqw;opacity:.55;margin-top:1cqw;animation:fadein 1s 1.4s both">المتنبي</div>
+        </div>
+        <sc-if value="{{ b.b1 }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;left:8cqw;right:8cqw;bottom:5cqw;display:flex;align-items:flex-end;justify-content:space-between;gap:4cqw;animation:rise 1s both">
+          <div style="display:flex;flex-direction:column;gap:.2cqw"><span style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:3.4cqw;font-weight:900">بيت واحد</span><span style="font-size:3.4cqw;font-weight:300;color:#8EE5D1">وعاش أكثر من ألف سنة</span></div>
+          <div style="flex:1;max-width:40cqw;display:flex;align-items:center;gap:1cqw;font-size:1.4cqw;opacity:.7;padding-bottom:1cqw"><span>القرن العاشر</span><span style="flex:1;height:.2cqw;background:repeating-linear-gradient(90deg,#F7FAF8 0 .5cqw,transparent .5cqw 1cqw)"></span><span>2026</span></div>
+        </div>
+        </sc-if>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ is.stay }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;background:#F7FAF8;animation:fadein .8s both">
+        <sc-if value="{{ be.e0 }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;inset:0;padding:0 9cqw;display:flex;flex-direction:column;justify-content:center;gap:2.4cqw">
+          <div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:7.4cqw;font-weight:900;color:#155E52;line-height:1.1;animation:rise 1s both">ليش بعض الجمل تبقى؟</div>
+          <div style="font-size:2.6cqw;line-height:1.6;max-width:62cqw;color:#34514C;animation:rise 1s .6s both">كل كلمة مؤثرة تحتاج شيئًا يمكن أن يحمله المستمع معه بعد أن ينتهي الكلام</div>
+        </div>
+        </sc-if>
+        <sc-if value="{{ be.e1 }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;inset:0;padding:7cqw;display:grid;grid-template-columns:1fr 1.7fr;gap:2cqw;align-items:stretch">
+          <div style="border:.15cqw dashed rgba(21,94,82,.35);border-radius:2.4cqw;padding:2.6cqw;display:flex;flex-direction:column;justify-content:space-between;animation:rise .8s both">
+            <span style="font-size:1.5cqw;color:#587470;font-weight:700">تُسمع</span>
+            <span style="font-size:3.4cqw;font-weight:400;color:#587470">«استخدم وقتك جيدًا»</span>
+          </div>
+          <div style="background:#155E52;color:#F7FAF8;border-radius:2.4cqw;padding:3cqw;display:flex;flex-direction:column;justify-content:space-between;animation:rise .9s .5s both">
+            <span style="font-size:1.5cqw;color:#8EE5D1;font-weight:700">تبقى</span>
+            <span style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:4.8cqw;font-weight:800;line-height:1.3">«كل مرة تقول: بعدين…<br><span style="color:#8EE5D1">أنت تدفع من عمرك</span>»</span>
+          </div>
+        </div>
+        </sc-if>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ is.stayact }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;background:#155E52;color:#F7FAF8;animation:fadein .8s both">
+        <div style="position:absolute;right:7cqw;top:0;bottom:0;width:{{ titleW }};display:flex;flex-direction:column;justify-content:center;gap:2cqw;transition:width .8s">
+          <div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:7cqw;font-weight:900;line-height:1.05;color:#8EE5D1">خلّ الجملة تبقى</div>
+          <div style="font-size:2cqw;opacity:.8">اختر فكرة، وأعد صياغتها في جملة قصيرة</div>
+          <div style="display:flex;flex-wrap:wrap;gap:.9cqw">
+            <span style="font-size:1.9cqw;padding:.6cqw 1.6cqw;border-radius:99px;border:1px solid rgba(247,250,248,.3)">احترم والديك</span>
+            <span style="font-size:1.9cqw;padding:.6cqw 1.6cqw;border-radius:99px;border:1px solid rgba(247,250,248,.3)">اقرأ أكثر</span>
+            <span style="font-size:1.9cqw;padding:.6cqw 1.6cqw;border-radius:99px;border:1px solid rgba(247,250,248,.3)">لا تستسلم</span>
+            <span style="font-size:1.9cqw;padding:.6cqw 1.6cqw;border-radius:99px;border:1px solid rgba(247,250,248,.3)">اختر صديقك بعناية</span>
+          </div>
+        </div>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ showNotes }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;left:5cqw;top:8cqw;bottom:5cqw;width:46cqw;display:flex;flex-wrap:wrap;align-content:center;justify-content:center;gap:1.3cqw;z-index:3">
+        <sc-for list="{{ notes }}" as="n" hint-placeholder-count="0">
+          <div style="transform:rotate({{ n.rot }});transition:transform .3s" style-hover="transform:rotate(0deg) scale(1.06)"><div style="background:{{ n.bg }};color:#123B35;border-radius:1.2cqw;padding:1.3cqw 1.7cqw;max-width:21cqw;display:flex;flex-direction:column;gap:.5cqw;box-shadow:0 .8cqw 2cqw -1cqw rgba(0,0,0,.3);animation:pop .6s cubic-bezier(.2,.8,.2,1.3) both">
+            <span style="font-family:'Aref Ruqaa',serif;font-size:2.4cqw;font-weight:400;line-height:1.5">{{ n.t }}</span><span style="font-size:.95cqw;opacity:.55">{{ n.a }}</span>
+          </div></div>
+        </sc-for>
+        <sc-if value="{{ notesEmpty }}" hint-placeholder-val="{{ true }}"><div style="width:100%;height:100%;border:.15cqw dashed {{ notesBd }};border-radius:2.4cqw;display:flex;align-items:center;justify-content:center;font-size:1.6cqw;opacity:.6;color:{{ notesFg }}">إجاباتكم تظهر هنا</div></sc-if>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ is.tone }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;background:#11352F;color:#F7FAF8;animation:fadein .8s both">
+        <div style="position:absolute;top:7cqw;left:0;right:0;display:flex;justify-content:center"><span style="font-size:1.5cqw;padding:.6cqw 1.6cqw;border-radius:99px;border:1px solid rgba(247,250,248,.25)">الجولة {{ toneN }} من 5 · {{ toneName }}</span></div>
+        <div style="font-family:'Baloo Bhaijaan 2',sans-serif;position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11cqw;font-weight:900;letter-spacing:-.2cqw;padding-bottom:4cqw">باقي عندك وقت</div>
+        <div style="position:absolute;left:8cqw;right:8cqw;bottom:5cqw;display:flex;justify-content:center">
+          <sc-if value="{{ toneHidden }}" hint-placeholder-val="{{ true }}"><div style="font-size:2.2cqw;opacity:.75;display:flex;align-items:center;gap:1cqw"><span style="width:.8cqw;height:.8cqw;border-radius:50%;background:#8EE5D1;animation:pulse 1.4s infinite"></span>ماذا وصلك؟ · {{ toneCount }} خمّنوا</div></sc-if>
+          <sc-if value="{{ tone.reveal }}" hint-placeholder-val="{{ false }}">
+          <div style="width:100%;display:grid;grid-template-columns:repeat(5,1fr);gap:1.2cqw;animation:rise .8s both">
+            <sc-for list="{{ toneRows }}" as="t" hint-placeholder-count="5">
+              <div style="display:flex;flex-direction:column;gap:.6cqw">
+                <div style="height:.7cqw;border-radius:1cqw;background:rgba(247,250,248,.12);overflow:hidden"><div style="height:100%;width:{{ t.pct }};background:{{ t.c }};transition:width .8s"></div></div>
+                <div style="display:flex;justify-content:space-between;font-size:1.8cqw;font-weight:{{ t.w }};color:{{ t.c }}"><span>{{ t.l }}</span><span>{{ t.pct }}</span></div>
+              </div>
+            </sc-for>
+          </div>
+          </sc-if>
+        </div>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ is.tools }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;background:#F7FAF8;animation:fadein .8s both">
+        <sc-if value="{{ be.e0 }}" hint-placeholder-val="{{ false }}"><div style="font-family:'Baloo Bhaijaan 2',sans-serif;position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11cqw;font-weight:900;color:#155E52;animation:rise 1s both">الكلمات نفسها</div></sc-if>
+        <sc-if value="{{ b.b1 }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;inset:0;padding:7cqw;display:flex;flex-direction:column;gap:2.4cqw">
+          <div style="font-size:3cqw;font-weight:300">لكن تغيّر:</div>
+          <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:1.2cqw">
+            <div style="background:#8EE5D1;border-radius:2cqw;padding:2cqw;aspect-ratio:1;display:flex;flex-direction:column;justify-content:space-between;animation:rise .7s .0s both"><span style="font-size:1.2cqw">01</span><span style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:3.6cqw;font-weight:900">الصوت</span></div>
+            <div style="background:#FFC9B5;border-radius:2cqw;padding:2cqw;aspect-ratio:1;display:flex;flex-direction:column;justify-content:space-between;animation:rise .7s .15s both"><span style="font-size:1.2cqw">02</span><span style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:3.6cqw;font-weight:900">السكتة</span></div>
+            <div style="background:#CFF1E8;border-radius:2cqw;padding:2cqw;aspect-ratio:1;display:flex;flex-direction:column;justify-content:space-between;animation:rise .7s .3s both"><span style="font-size:1.2cqw">03</span><span style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:3.6cqw;font-weight:900">النظرة</span></div>
+            <div style="background:#FFE7A3;border-radius:2cqw;padding:2cqw;aspect-ratio:1;display:flex;flex-direction:column;justify-content:space-between;animation:rise .7s .45s both"><span style="font-size:1.2cqw">04</span><span style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:3.6cqw;font-weight:900">السرعة</span></div>
+            <div style="background:#DCD0F7;border-radius:2cqw;padding:2cqw;aspect-ratio:1;display:flex;flex-direction:column;justify-content:space-between;animation:rise .7s .6s both"><span style="font-size:1.2cqw">05</span><span style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:3.6cqw;font-weight:900">الحضور</span></div>
+          </div>
+        </div>
+        </sc-if>
+        <sc-if value="{{ b.b2 }}" hint-placeholder-val="{{ false }}"><div style="font-family:'Baloo Bhaijaan 2',sans-serif;position:absolute;left:7cqw;right:7cqw;bottom:5cqw;height:12cqw;border-radius:3cqw;background:#155E52;color:#8EE5D1;display:flex;align-items:center;justify-content:center;font-size:5.4cqw;font-weight:900;animation:rise .9s both">أدوات الإلقاء تحمل المعنى</div></sc-if>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ is.arch }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;background:#F7FAF8;padding:5.5cqw 5cqw 4.5cqw;display:flex;flex-direction:column;gap:2.4cqw;animation:fadein .8s both">
+        <div style="display:flex;justify-content:space-between;align-items:flex-end">
+          <div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:6.6cqw;font-weight:900;color:#155E52;line-height:1.1">عندك <span style="background:linear-gradient(transparent 58%,#8EE5D1 58% 88%,transparent 88%);padding:0 .6cqw">دقيقتان</span></div>
+          <div style="font-size:1.3cqw;font-weight:700;padding:.5cqw 1.3cqw;border-radius:99px;background:#155E52;color:#F7FAF8">هندسة الدقيقتين · محفوظة في حقيبتك</div>
+        </div>
+        <div style="flex:1;display:flex;gap:.7cqw;min-height:0">
+          <sc-for list="{{ archSegs }}" as="s" hint-placeholder-count="5">
+            <div style="flex:{{ s.g }} 1 0;min-width:11.5cqw;display:flex;flex-direction:column;gap:.8cqw">
+              <div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:1.5cqw;font-weight:800;color:#155E52;font-variant-numeric:tabular-nums">{{ s.t }}</div>
+              <div style="position:relative;flex:1;border-radius:1.8cqw;border:.15cqw dashed rgba(21,94,82,.28);overflow:hidden">
+                <sc-if value="{{ s.on }}" hint-placeholder-val="{{ false }}">
+                <div style="position:absolute;inset:0;background:{{ s.bg }};padding:1.3cqw 1.2cqw;display:flex;flex-direction:column;gap:1.4cqw;text-align:right;animation:pop .7s cubic-bezier(.2,.8,.2,1.2) both">
+                  <span style="align-self:flex-start;font-size:1.05cqw;font-weight:700;padding:.15cqw .7cqw;border-radius:99px;background:rgba(255,255,255,.6);color:#155E52">{{ s.num }}</span>
+                  <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:1.4cqw;min-height:0">
+                    <span style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:2.7cqw;font-weight:800;line-height:1.15;color:#155E52;text-wrap:balance">{{ s.v }}</span>
+                    <div style="display:flex;flex-wrap:wrap;gap:.5cqw">
+                      <sc-for list="{{ s.d }}" as="ln" hint-placeholder-count="2"><span style="font-size:1.4cqw;font-weight:600;line-height:1.35;padding:.45cqw .9cqw;border-radius:.9cqw;background:rgba(255,255,255,.72);color:#123B35;text-wrap:balance">{{ ln }}</span></sc-for>
+                    </div>
+                  </div>
+                </div>
+                </sc-if>
+              </div>
+            </div>
+          </sc-for>
+          <div style="flex:0 0 8.5cqw;display:flex;flex-direction:column;gap:.8cqw">
+            <div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:1.5cqw;font-weight:800;color:#155E52">02:00</div>
+            <div style="flex:1;border-radius:1.8cqw;border:.15cqw dashed rgba(21,94,82,.28);position:relative;overflow:hidden">
+              <sc-if value="{{ b.b5 }}" hint-placeholder-val="{{ false }}"><div style="font-family:'Baloo Bhaijaan 2',sans-serif;position:absolute;inset:0;background:#155E52;color:#F7FAF8;display:flex;align-items:center;justify-content:center;writing-mode:vertical-rl;font-size:3.4cqw;font-weight:900;animation:pop .7s both">اسكت</div></sc-if>
+            </div>
+          </div>
+        </div>
+        <div style="height:1.4cqw;background:repeating-linear-gradient(90deg,rgba(21,94,82,.45) 0 .12cqw,transparent .12cqw calc(100% / 24));border-top:.12cqw solid rgba(21,94,82,.45)"></div>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ is.ready }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;background:#155E52;color:#F7FAF8;animation:fadein .8s both">
+        <sc-if value="{{ be.e0 }}" hint-placeholder-val="{{ false }}"><div style="font-family:'Baloo Bhaijaan 2',sans-serif;position:absolute;inset:0;display:flex;align-items:center;padding:0 9cqw;font-size:9cqw;font-weight:900;line-height:1.1;animation:rise 1s both">الآن عندك<br>كل شيء</div></sc-if>
+        <sc-if value="{{ be.e1 }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;inset:0;padding:0 7cqw;display:grid;grid-template-columns:repeat(3,1fr);align-items:center;gap:3cqw">
+          <div style="display:flex;flex-direction:column;animation:rise .8s both"><span style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:17cqw;font-weight:900;line-height:1.15;color:#FFFFFF;-webkit-text-stroke:.7cqw #3CC7B0;paint-order:stroke fill">20</span><span style="font-size:3cqw;font-weight:300">شخصًا</span></div>
+          <div style="display:flex;flex-direction:column;animation:rise .8s .5s both"><span style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:17cqw;font-weight:900;line-height:1.15;color:#FFFFFF;-webkit-text-stroke:.7cqw #3CC7B0;paint-order:stroke fill">2</span><span style="font-size:3cqw;font-weight:300">دقيقتان لكل شخص</span></div>
+          <div style="display:flex;flex-direction:column;animation:rise .8s 1s both"><span style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:17cqw;font-weight:900;line-height:1.15;color:#FFFFFF;-webkit-text-stroke:.7cqw #3CC7B0;paint-order:stroke fill">40</span><span style="font-size:3cqw;font-weight:300">دقيقة</span></div>
+        </div>
+        </sc-if>
+        <sc-if value="{{ be.e2 }}" hint-placeholder-val="{{ false }}"><div style="font-family:'Baloo Bhaijaan 2',sans-serif;position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;font-size:8.4cqw;font-weight:900;line-height:1.15;animation:rise 1s both">ماذا ستفعل<br><span style="color:#8EE5D1">بدقيقتك؟</span></div></sc-if>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ is.speak }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0">
+        <sc-if value="{{ spPhase.next }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;inset:0;background:#F7FAF8;padding:0 9cqw;display:flex;flex-direction:column;justify-content:center;gap:1.6cqw;animation:fadein .4s both">
+          <div style="display:flex;gap:1.2cqw;align-items:center"><span style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:1.8cqw;font-weight:800;padding:.5cqw 1.6cqw;border-radius:99px;background:#8EE5D1;color:#155E52">التالي</span><span style="font-size:1.8cqw;color:#587470;font-variant-numeric:tabular-nums">{{ spk.n }} / 20</span></div>
+          <div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:14cqw;font-weight:900;line-height:1;color:#155E52;letter-spacing:-.3cqw;animation:rise .6s both">{{ spk.name }}</div>
+          <sc-if value="{{ sp.ready }}" hint-placeholder-val="{{ false }}"><div style="font-size:2.8cqw;animation:rise .6s both"><span style="color:#587470">سيتحدث عن:</span> <b>{{ sp.topic }}</b></div></sc-if>
+          <sc-if value="{{ spNotReady }}" hint-placeholder-val="{{ true }}"><div style="font-size:2.2cqw;color:#587470;display:flex;gap:1cqw;align-items:center"><span style="width:.8cqw;height:.8cqw;border-radius:50%;background:#155E52;animation:pulse 1.2s infinite"></span>يجهّز فكرته…</div></sc-if>
+          <div style="position:absolute;left:9cqw;right:9cqw;bottom:5cqw;display:flex;gap:.5cqw">
+            <sc-for list="{{ spDots }}" as="d" hint-placeholder-count="20"><span style="flex:1;height:.5cqw;border-radius:1cqw;background:{{ d }}"></span></sc-for>
+          </div>
+        </div>
+        </sc-if>
+        <sc-if value="{{ spPhase.speaking }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;inset:0;background:{{ spBg }};color:#F7FAF8;transition:background 2.5s ease;animation:fadein .6s both">
+          <div style="position:absolute;top:6cqw;right:7cqw;display:flex;flex-direction:column;gap:.4cqw"><span style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:2.4cqw;font-weight:800;opacity:.85">{{ spk.name }}</span><span style="font-size:1.6cqw;opacity:.5">{{ sp.topic }}</span></div>
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:21cqw;font-weight:200;letter-spacing:.2cqw;font-variant-numeric:tabular-nums">{{ timerText }}</div>
+          <div style="position:absolute;top:6.6cqw;left:7cqw;display:flex;gap:.8cqw">
+            <sc-for list="{{ quarters }}" as="q" hint-placeholder-count="4"><span style="width:.9cqw;height:.9cqw;border-radius:50%;border:.12cqw solid rgba(247,250,248,.5);background:{{ q }};transition:background 1s"></span></sc-for>
+          </div>
+          <div style="position:absolute;bottom:0;right:0;height:.35cqw;width:{{ spProg }};background:#8EE5D1;transition:width .3s linear"></div>
+        </div>
+        </sc-if>
+        <sc-if value="{{ spPhase.feedback }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;inset:0;background:#F7FAF8;padding:0 9cqw;display:flex;flex-direction:column;justify-content:center;gap:2.4cqw;animation:fadein .5s both">
+          <div style="font-size:3.4cqw;font-weight:200;color:#587470;font-variant-numeric:tabular-nums">00:00 · {{ spk.name }}</div>
+          <div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:7cqw;font-weight:900;line-height:1.1;color:#155E52">ماذا فعلت بك<br>دقيقتاه؟</div>
+          <div style="display:flex;align-items:center;gap:2cqw">
+            <div style="display:flex;gap:.6cqw">
+              <sc-for list="{{ fbDots }}" as="d" hint-placeholder-count="19"><span style="width:1.4cqw;height:1.4cqw;border-radius:50%;background:{{ d }};transition:background .4s"></span></sc-for>
+            </div>
+            <span style="font-size:1.8cqw;font-weight:700;font-variant-numeric:tabular-nums">{{ sp.fb }} / 19</span>
+          </div>
+        </div>
+        </sc-if>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ is.end }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;background:#0E2B26;color:#F7FAF8;padding:0 10cqw;display:flex;flex-direction:column;justify-content:center;gap:1.4cqw;animation:fadein 1.6s both">
+        <div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:7.4cqw;font-weight:900;line-height:1.1;animation:rise 1.2s both">20 شخصًا</div>
+        <sc-if value="{{ b.b1 }}" hint-placeholder-val="{{ false }}"><div style="font-size:7.4cqw;font-weight:300;line-height:1.1;animation:rise 1.2s both">40 دقيقة</div></sc-if>
+        <sc-if value="{{ b.b2 }}" hint-placeholder-val="{{ false }}"><div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:7.4cqw;font-weight:900;line-height:1.1;color:#FFFFFF;-webkit-text-stroke:.5cqw #3CC7B0;paint-order:stroke fill;margin-top:2cqw;animation:rise 1.2s both">ماذا بقي؟</div></sc-if>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ is.impact }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;background:#F7FAF8;padding:4.2cqw 4cqw 3cqw;display:flex;flex-direction:column;gap:1.6cqw;animation:fadein .8s both">
+        <div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:3.6cqw;font-weight:900;color:#155E52">خريطة الأثر</span><span style="font-size:1.3cqw;color:#587470">ما أراده كل متحدث، وما بقي فعلًا عند الجمهور</span></div>
+        <div style="flex:1;display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(4,1fr);gap:.9cqw;min-height:0">
+          <sc-for list="{{ impact }}" as="c" hint-placeholder-count="20">
+            <div style="background:{{ c.bg }};border-radius:1.4cqw;padding:1cqw 1.2cqw;display:flex;flex-direction:column;gap:.35cqw;min-height:0;overflow:hidden;transform:rotate({{ c.rot }});animation:pop .7s cubic-bezier(.2,.8,.2,1.2) both;animation-delay:{{ c.delay }}">
+              <span style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:1.6cqw;font-weight:900;color:#155E52;line-height:1.1">{{ c.name }}</span>
+              <span style="font-size:.95cqw;font-weight:500;line-height:1.45;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">«{{ c.line }}»</span>
+              <div style="margin-top:auto;display:flex;flex-wrap:wrap;gap:.3cqw">
+                <sc-for list="{{ c.words }}" as="w" hint-placeholder-count="3"><span style="font-size:.85cqw;font-weight:700;padding:.15cqw .6cqw;border-radius:99px;background:rgba(255,255,255,.65)">{{ w }}</span></sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ is.words }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;background:#0F443C;color:#F7FAF8;animation:fadein 1.4s both">
+        {{ wordField }}
+        <sc-if value="{{ be.e1 }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:1cqw;background:radial-gradient(closest-side,rgba(15,68,60,.92),rgba(15,68,60,0))"><span style="font-size:5cqw;font-weight:300;animation:rise 1.2s both">قبل قليل…</span><span style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:5cqw;font-weight:900;animation:rise 1.2s .8s both">كانت هذه الكلمات داخل 20 شخصًا</span></div></sc-if>
+        <sc-if value="{{ be.e2 }}" hint-placeholder-val="{{ false }}"><div style="font-family:'Baloo Bhaijaan 2',sans-serif;position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;font-size:5.6cqw;font-weight:900;color:#8EE5D1;animation:rise 1.4s 1.6s both">الآن أصبحت عند الجميع</div></sc-if>
+        <sc-if value="{{ be.e3 }}" hint-placeholder-val="{{ false }}"><div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:1.6cqw"><span style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:5cqw;font-weight:800;line-height:1.4;max-width:78cqw;text-wrap:balance;animation:rise 1.6s 1.2s both">ما يخرج من القلب سيصل إلى القلب</span><span style="font-size:3.6cqw;font-weight:300;line-height:1.5;max-width:78cqw;text-wrap:balance;color:#8EE5D1;animation:rise 1.6s 2.6s both">وما يخرج من حافة اللسان لا يتجاوز «الآذان»</span><span style="margin-top:4cqw;font-family:'Aref Ruqaa',serif;font-size:2.6cqw;font-weight:400;opacity:.85;animation:rise 1.6s 4.2s both">كان معكم مازن مليباري</span></div></sc-if>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{ chromeOn }}" hint-placeholder-val="{{ true }}">
+      <div style="position:absolute;top:0;left:0;right:0;padding:2.2cqw 3cqw;display:flex;justify-content:space-between;align-items:center;color:{{ chromeInk }};pointer-events:none;z-index:5;transition:color .6s">
+        <span style="font-size:1.15cqw;font-weight:600;opacity:.65">{{ chromeCh }}</span>
+        <span style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:1.7cqw;font-weight:900;opacity:.8">أثر</span>
+      </div>
+      </sc-if>
+      <div style="position:absolute;bottom:0;right:0;height:.4cqw;width:{{ progW }};background:linear-gradient(to left,#3CC7B0 0 25%,#FFE7A3 25% 50%,#FFC9B5 50% 75%,#DCD0F7 75%);transition:width .8s cubic-bezier(.2,.8,.2,1);z-index:5"></div>
+    </div>
+
+    <sc-if value="{{ isConsole }}" hint-placeholder-val="{{ true }}">
+    <div style="width:{{ stageW }};display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#587470;gap:12px">
+      <span>المسافة أو السهم الأيسر للتقدّم · السهم الأيمن للرجوع</span>
+      <span style="white-space:nowrap">{{ sceneCount }}</span>
+    </div>
+    </sc-if>
+  </main>
+  </sc-if>
+
+  <sc-if value="{{ phoneOn }}" hint-placeholder-val="{{ true }}">
+  <aside style="flex:{{ phAsideFlex }};order:3;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px">
+    <sc-if value="{{ notJoin }}" hint-placeholder-val="{{ true }}"><div style="font-size:13px;color:#587470">جوال المشارك · <b style="color:#155E52">{{ phoneOwner }}</b></div></sc-if>
+    <sc-if value="{{ showPhoneToggle }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;gap:4px;background:rgba(21,94,82,.08);padding:3px;border-radius:999px">
+        <button onClick="{{ viewAud }}" style="border:0;cursor:pointer;padding:6px 12px;border-radius:999px;font-size:12px;font-weight:700;background:{{ audBg }};color:#155E52">جوال الجمهور</button>
+        <button onClick="{{ viewSpk }}" style="border:0;cursor:pointer;padding:6px 12px;border-radius:999px;font-size:12px;font-weight:700;background:{{ spkBg }};color:#155E52">جوال المتحدث</button>
+      </div>
+    </sc-if>
+    <div style="height:{{ phoneH }};width:{{ pfW }};aspect-ratio:{{ pfAR }};flex:none;border-radius:{{ pfR }};background:#131715;padding:{{ pfPad }};box-shadow:0 30px 60px -25px rgba(0,0,0,.5)">
+      <div style="position:relative;width:100%;height:100%;border-radius:{{ piR }};overflow:hidden;background:#F7FAF8">
+        <div style="position:absolute;top:0;left:0;right:0;height:38px;opacity:{{ sbOp }};display:flex;justify-content:space-between;align-items:center;padding:0 24px;font-size:12px;font-weight:700;z-index:4;color:{{ phInk }}"><span>9:41</span><span style="width:80px;height:22px;border-radius:12px;background:#131715"></span><span>أثر</span></div>
+
+        <sc-if value="{{ ps.join }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;inset:0;padding:64px 20px 24px;display:flex;flex-direction:column;gap:14px;animation:rise .45s both">
+          <div style="width:52px;height:52px;border-radius:16px;background:#155E52;color:#FFE7A3;display:flex;align-items:center;justify-content:center;font-family:'Baloo Bhaijaan 2',sans-serif;font-size:26px;font-weight:800;animation:wobble 6s ease-in-out infinite">أ</div>
+          <div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:34px;font-weight:800;line-height:1.15;color:#155E52">أهلًا بك في أثر</div>
+          <div style="font-size:15px;color:#587470;line-height:1.6">اكتب اسمك ليظهر مع زملائك على الشاشة</div>
+          <input value="{{ jn.inputName }}" onChange="{{ onJoinName }}" placeholder="اسمك" style="border:0;border-radius:16px;padding:16px;font-size:18px;background:#FFFFFF;outline:none;box-shadow:0 1px 0 rgba(21,94,82,.08)"></input>
+          <button onClick="{{ doJoin }}" style="margin-top:auto;border:0;border-radius:20px;padding:18px;font-size:19px;font-weight:800;cursor:pointer;background:{{ joinBg }};color:{{ joinFg }};transition:transform .2s" style-active="transform:scale(.97)">ادخل</button>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{ ps.listen }}" hint-placeholder-val="{{ true }}">
+        <div style="position:absolute;inset:0;background:#155E52;color:#F7FAF8;padding:60px 26px 30px;display:flex;flex-direction:column;justify-content:space-between;animation:fadein .5s both">
+          <div style="font-size:12px;opacity:.6">{{ phoneCh }}</div>
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <span style="position:relative;width:14px;height:14px"><span style="position:absolute;inset:0;border-radius:50%;background:#8EE5D1"></span><span style="position:absolute;inset:0;border-radius:50%;border:2px solid #8EE5D1;animation:wave 2.4s ease-out infinite"></span><span style="position:absolute;inset:0;border-radius:50%;border:2px solid #8EE5D1;animation:wave 2.4s ease-out 1.2s infinite"></span></span>
+            <div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:42px;font-weight:900;line-height:1.1">{{ listenTitle }}</div>
+            <div style="font-size:15px;opacity:.7;line-height:1.5">{{ listenSub }}</div>
+          </div>
+          <div style="font-size:12px;opacity:.45;line-height:1.6">سيتغير جوالك تلقائيًا عندما يبدأ نشاط</div>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{ ps.vote }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;inset:0;padding:56px 18px 22px;display:flex;flex-direction:column;gap:14px;animation:rise .45s both">
+          <span style="font-family:'Baloo Bhaijaan 2',sans-serif;align-self:flex-start;font-size:12px;font-weight:800;padding:4px 12px;border-radius:999px;background:#8EE5D1;color:#155E52">{{ actKind }}</span>
+          <div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:26px;font-weight:900;line-height:1.2;color:#155E52">{{ phoneQ }}</div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:8px;overflow:auto">
+            <sc-for list="{{ phoneOpts }}" as="o" hint-placeholder-count="3">
+              <button onClick="{{ o.pick }}" style="text-align:right;border:0;background:#FFFFFF;border-radius:18px;padding:14px 16px;cursor:pointer;display:flex;flex-direction:column;gap:3px;box-shadow:0 1px 0 rgba(21,94,82,.08)" style-active="transform:scale(.97)">
+                <span style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:17px;font-weight:800;color:#123B35">{{ o.l }}</span>
+                <span style="font-size:12px;color:#587470;line-height:1.5">{{ o.s }}</span>
+              </button>
+            </sc-for>
+          </div>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{ ps.voted }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;inset:0;background:#155E52;color:#F7FAF8;padding:60px 26px 30px;display:flex;flex-direction:column;justify-content:center;gap:12px;animation:fadein .4s both">
+          <div style="font-family:'Baloo Bhaijaan 2',sans-serif;width:56px;height:56px;border-radius:50%;background:#8EE5D1;color:#155E52;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900;animation:pop .5s both">✓</div>
+          <div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:36px;font-weight:900">وصل صوتك</div>
+          <div style="font-size:15px;opacity:.75">اخترت: {{ myPick }}</div>
+          <div style="font-size:13px;opacity:.5;margin-top:10px">ارفع رأسك النتيجة على الشاشة</div>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{ ps.text }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;inset:0;padding:56px 18px 22px;display:flex;flex-direction:column;gap:12px;animation:rise .45s both">
+          <span style="font-family:'Baloo Bhaijaan 2',sans-serif;align-self:flex-start;font-size:12px;font-weight:800;padding:4px 12px;border-radius:999px;background:#8EE5D1;color:#155E52">إجابة قصيرة</span>
+          <div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:26px;font-weight:900;line-height:1.25;color:#155E52">{{ prompt.q }}</div>
+          <div style="font-size:13px;color:#587470">{{ prompt.h }}</div>
+          <textarea value="{{ ph.text }}" onChange="{{ onText }}" placeholder="اكتب هنا…" style="flex:1;max-height:160px;border:0;border-radius:18px;padding:14px;font-size:17px;line-height:1.5;resize:none;background:#FFFFFF;color:#123B35;outline:none"></textarea>
+          <sc-if value="{{ textWarn }}" hint-placeholder-val="{{ false }}"><div style="font-size:13px;color:#B4432F;font-weight:700">بدون «خائف» أو «خوف» خلّني أشوفه</div></sc-if>
+          <button onClick="{{ sendText }}" style="font-family:'Baloo Bhaijaan 2',sans-serif;border:0;border-radius:18px;padding:16px;font-size:17px;font-weight:900;cursor:pointer;background:{{ sendBg }};color:{{ sendFg }}">أرسل</button>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{ ps.sent }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;inset:0;background:#155E52;color:#F7FAF8;padding:60px 26px 30px;display:flex;flex-direction:column;justify-content:center;gap:14px;animation:fadein .4s both">
+          <div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:40px;font-weight:900">وصلت</div>
+          <div style="background:#FFE7A3;color:#123B35;border-radius:16px;padding:16px;font-family:'Aref Ruqaa',serif;font-size:20px;font-weight:400;line-height:1.5;transform:rotate(-2deg)">{{ ph.text }}</div>
+          <div style="font-size:13px;opacity:.55">ربما تظهر على الشاشة بعد قليل</div>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{ ps.ready }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;inset:0;padding:56px 18px 22px;display:flex;flex-direction:column;gap:12px;animation:rise .45s both">
+          <span style="font-family:'Baloo Bhaijaan 2',sans-serif;align-self:flex-start;font-size:12px;font-weight:800;padding:4px 12px;border-radius:999px;background:#8EE5D1;color:#155E52">دورك التالي</span>
+          <div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:26px;font-weight:900;line-height:1.2;color:#155E52">{{ spk.name }}، جهّز دقيقتك</div>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:700">سأتحدث عن:
+            <input value="{{ ph.rTopic }}" onChange="{{ onTopic }}" placeholder="{{ spkPreset.topic }}" style="border:0;border-radius:14px;padding:13px;font-size:16px;background:#FFFFFF;outline:none">
+          </label>
+          <label style="display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:700">الجملة التي أريد أن تبقى:
+            <textarea value="{{ ph.rLine }}" onChange="{{ onLine }}" placeholder="{{ spkPreset.line }}" style="border:0;border-radius:14px;padding:13px;font-size:16px;line-height:1.5;height:110px;resize:none;background:#FFFFFF;outline:none"></textarea>
+          </label>
+          <button onClick="{{ imReady }}" style="font-family:'Baloo Bhaijaan 2',sans-serif;margin-top:auto;border:0;border-radius:20px;padding:18px;font-size:20px;font-weight:900;cursor:pointer;background:#155E52;color:#8EE5D1">أنا جاهز</button>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{ ps.readyDone }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;inset:0;background:#155E52;color:#F7FAF8;padding:60px 26px 30px;display:flex;flex-direction:column;justify-content:center;gap:12px;animation:fadein .4s both">
+          <div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:44px;font-weight:900;color:#8EE5D1">جاهز</div>
+          <div style="font-size:15px;opacity:.8;line-height:1.6">ستبقى جملتك معك لن تظهر على الشاشة أثناء إلقائك</div>
+          <div style="font-size:13px;opacity:.5;margin-top:8px">انتظر إشارة المقدّم</div>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{ ps.stage }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;inset:0;background:#11352F;color:#F7FAF8;padding:60px 26px 30px;display:flex;flex-direction:column;justify-content:center;gap:12px;animation:fadein .4s both">
+          <div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:38px;font-weight:900;line-height:1.15">{{ stageTitle }}</div>
+          <div style="font-size:15px;opacity:.65">{{ stageSub }}</div>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{ ps.fb }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;inset:0;padding:54px 18px 20px;display:flex;flex-direction:column;gap:12px;animation:rise .45s both">
+          <div style="font-size:12px;color:#587470">بعد دقيقتي {{ spk.name }}</div>
+          <div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:25px;font-weight:900;line-height:1.2;color:#155E52">ماذا فعلت بك دقيقتاه؟</div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px">
+            <sc-for list="{{ fbOpts }}" as="o" hint-placeholder-count="7">
+              <button onClick="{{ o.pick }}" style="border:1.5px solid {{ o.bd }};background:{{ o.bg }};color:{{ o.fg }};border-radius:999px;padding:9px 13px;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s">{{ o.l }}</button>
+            </sc-for>
+          </div>
+          <div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:15px;font-weight:800;margin-top:6px">إيش بقي معك؟</div>
+          <input value="{{ ph.fbText }}" onChange="{{ onFbText }}" placeholder="3 إلى 5 كلمات" style="border:0;border-radius:14px;padding:13px;font-size:16px;background:#FFFFFF;outline:none">
+          <div style="font-size:12px;color:{{ fbWordsC }};margin-top:-6px">{{ fbWords }} / 5 كلمات</div>
+          <button onClick="{{ sendFb }}" style="font-family:'Baloo Bhaijaan 2',sans-serif;margin-top:auto;border:0;border-radius:18px;padding:16px;font-size:17px;font-weight:900;cursor:pointer;background:{{ fbSendBg }};color:{{ fbSendFg }}">أرسل الأثر</button>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{ ps.fbDone }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;inset:0;background:#155E52;color:#F7FAF8;padding:60px 26px 30px;display:flex;flex-direction:column;justify-content:center;gap:12px;animation:fadein .4s both">
+          <div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:40px;font-weight:900">وصل أثرك</div>
+          <div style="font-size:15px;opacity:.7">سيصل إلى {{ spk.name }} بعد الجلسة</div>
+          <div style="font-size:13px;opacity:.5;margin-top:8px">استمع للتالي</div>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{ ps.end }}" hint-placeholder-val="{{ false }}">
+        <div style="position:absolute;inset:0;padding:60px 22px 24px;display:flex;flex-direction:column;justify-content:space-between;animation:fadein .6s both">
+          <div style="display:flex;flex-direction:column;gap:10px"><div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:38px;font-weight:900;line-height:1.1;color:#155E52">انتهت الجلسة</div><div style="font-size:15px;color:#587470">حقيبتك ودقيقتك محفوظتان هنا</div></div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <button onClick="{{ goKit }}" style="font-family:'Baloo Bhaijaan 2',sans-serif;border:0;border-radius:18px;padding:16px;font-size:17px;font-weight:900;cursor:pointer;background:#155E52;color:#F7FAF8">افتح حقيبتي</button>
+            <button onClick="{{ goMe }}" style="font-family:'Baloo Bhaijaan 2',sans-serif;border:0;border-radius:18px;padding:16px;font-size:17px;font-weight:900;cursor:pointer;background:#8EE5D1;color:#155E52">دقيقتي</button>
+          </div>
+        </div>
+        </sc-if>
+      </div>
+    </div>
+  </aside>
+  </sc-if>
+</div>
+</sc-if>
+
+<sc-if value="{{ isKit }}" hint-placeholder-val="{{ false }}">
+<div ref="{{ kitRef }}" style="flex:1;overflow:auto;background:#F7FAF8">
+  <div style="max-width:1180px;margin:0 auto;padding:56px 28px 90px;display:flex;flex-direction:column;gap:36px">
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <div style="font-size:14px;color:#587470">أثر · ماذا تستطيع أن تفعل بكلمتك؟</div>
+      <div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:clamp(72px,12vw,150px);font-weight:900;line-height:1;color:#155E52;letter-spacing:-3px">حقيبتي</div>
+      <div style="font-size:18px;max-width:560px;line-height:1.7;color:#34514C">ما مر بك في الورشة، مختصرًا ارجع إليه قبل أي كلمة تلقيها</div>
+    </div>
+    <div ref="{{ kitDetailRef }}"></div>
+    <sc-if value="{{ kitHasOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="background:#FFFFFF;border-radius:40px;padding:clamp(24px,5vw,56px);display:flex;flex-direction:column;gap:28px;animation:rise .5s both">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:16px">
+        <div style="display:flex;align-items:baseline;gap:18px;flex-wrap:wrap"><span style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:72px;font-weight:900;line-height:1;color:{{ kitCur.ac }}">{{ kitCur.n }}</span><span style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:clamp(30px,4vw,48px);font-weight:900;color:#155E52;line-height:1.1">{{ kitCur.title }}</span></div>
+        <button onClick="{{ closeKit }}" style="border:0;background:#F7FAF8;border-radius:999px;width:44px;height:44px;font-size:18px;cursor:pointer;flex:none">✕</button>
+      </div>
+      <div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:clamp(24px,3vw,36px);font-weight:800;line-height:1.45;color:#123B35;max-width:860px;text-wrap:pretty">«{{ kitCur.quote }}»</div>
+      <sc-if value="{{ kitCur.hasPairs }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <sc-for list="{{ kitCur.pairs }}" as="p" hint-placeholder-count="1">
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px">
+              <div style="border:1.5px dashed rgba(21,94,82,.3);border-radius:24px;padding:22px;display:flex;flex-direction:column;gap:8px"><span style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:12px;font-weight:800;color:#587470">بدل</span><span style="font-size:18px;color:#587470;line-height:1.6">{{ p.bad }}</span></div>
+              <div style="background:#155E52;color:#F7FAF8;border-radius:24px;padding:22px;display:flex;flex-direction:column;gap:8px"><span style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:12px;font-weight:800;color:#8EE5D1">قل</span><span style="font-size:19px;font-weight:700;line-height:1.6">{{ p.good }}</span></div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+      <sc-if value="{{ kitIsArch }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;gap:6px;min-height:220px;overflow-x:auto">
+          <sc-for list="{{ archAll }}" as="s" hint-placeholder-count="5">
+            <div style="flex:{{ s.g }} 1 0;min-width:110px;display:flex;flex-direction:column;gap:6px">
+              <span style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:13px;font-weight:800;color:#155E52">{{ s.t }}</span>
+              <div style="flex:1;background:{{ s.bg }};border-radius:20px;padding:14px;display:flex;flex-direction:column;justify-content:flex-end;gap:6px"><span style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:22px;font-weight:900;color:#155E52;line-height:1.1">{{ s.v }}</span><span style="font-size:13px;line-height:1.5">{{ s.dj }}</span></div>
+            </div>
+          </sc-for>
+          <div style="flex:0 0 72px;display:flex;flex-direction:column;gap:6px"><span style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:13px;font-weight:800;color:#155E52">02:00</span><div style="font-family:'Baloo Bhaijaan 2',sans-serif;flex:1;background:#155E52;color:#F7FAF8;border-radius:20px;display:flex;align-items:center;justify-content:center;writing-mode:vertical-rl;font-size:26px;font-weight:900">اسكت</div></div>
+        </div>
+      </sc-if>
+      <sc-if value="{{ kitCur.hasMoments }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-wrap:wrap;gap:10px">
+          <sc-for list="{{ kitCur.moments }}" as="m" hint-placeholder-count="3"><span style="font-size:16px;font-weight:600;padding:12px 18px;border-radius:999px;background:#F7FAF8;line-height:1.5">{{ m }}</span></sc-for>
+        </div>
+      </sc-if>
+      <div style="display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;justify-content:space-between">
+        <div style="background:#FFE7A3;border-radius:18px;padding:20px 22px;max-width:520px;transform:rotate(-1.2deg);box-shadow:0 12px 24px -14px rgba(0,0,0,.3);display:flex;flex-direction:column;gap:6px"><span style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:12px;font-weight:800">تمرين قصير</span><span style="font-family:'Aref Ruqaa',serif;font-size:21px;font-weight:400;line-height:1.6">{{ kitCur.try }}</span></div>
+        <sc-if value="{{ kitIsMe }}" hint-placeholder-val="{{ false }}"><button onClick="{{ goMe }}" style="font-family:'Baloo Bhaijaan 2',sans-serif;border:0;border-radius:999px;padding:16px 28px;font-size:17px;font-weight:900;cursor:pointer;background:#155E52;color:#8EE5D1">افتح دقيقتي ←</button></sc-if>
+      </div>
+    </div>
+    </sc-if>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px">
+      <sc-for list="{{ kitItems }}" as="k" hint-placeholder-count="8">
+        <button onClick="{{ k.open }}" style="text-align:right;border:2px solid {{ k.bd }};background:{{ k.bg }};color:{{ k.fg }};border-radius:30px;padding:24px;min-height:210px;cursor:pointer;display:flex;flex-direction:column;justify-content:space-between;gap:16px;transform:rotate({{ k.rot }});transition:transform .3s" style-hover="transform:rotate(0deg) translateY(-4px)">
+          <span style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:60px;font-weight:900;line-height:.9;opacity:.9">{{ k.n }}</span>
+          <span style="display:flex;flex-direction:column;gap:6px"><span style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:22px;font-weight:900;line-height:1.2">{{ k.title }}</span><span style="font-size:14px;line-height:1.6;opacity:.75">{{ k.line }}</span></span>
+        </button>
+      </sc-for>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isMe }}" hint-placeholder-val="{{ false }}">
+<div style="flex:1;overflow:auto;background:#F7FAF8">
+  <div style="max-width:1100px;margin:0 auto;padding:48px 28px 90px;display:flex;flex-direction:column;gap:28px">
+    <div style="background:#155E52;color:#F7FAF8;border-radius:44px;padding:clamp(28px,5vw,60px);display:flex;flex-direction:column;gap:22px;position:relative;overflow:hidden">
+      <div style="position:absolute;left:-80px;bottom:-120px;width:340px;height:340px;border-radius:50%;background:#1E7A6B"></div>
+      <div style="position:relative;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap"><span style="font-size:14px;opacity:.7">دقيقتي · 10 / 20</span><span style="font-size:14px;color:#8EE5D1;font-weight:700">تحدثت عن: {{ me.topic }}</span></div>
+      <div style="font-family:'Baloo Bhaijaan 2',sans-serif;position:relative;font-size:clamp(64px,11vw,130px);font-weight:900;line-height:1;letter-spacing:-2px">{{ me.name }}</div>
+      <div style="position:relative;display:flex;flex-direction:column;gap:8px;max-width:760px"><span style="font-size:14px;color:#8EE5D1;font-weight:700">أردت أن تبقى:</span><span style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:clamp(24px,3.4vw,40px);font-weight:800;line-height:1.4">«{{ me.line }}»</span></div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:clamp(36px,6vw,64px);font-weight:900;color:#155E52;line-height:1.1">ماذا بقي عندهم؟</div>
+      <div style="background:#FFFFFF;border-radius:36px;padding:40px 28px;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:10px 22px">
+        <sc-for list="{{ meCloud }}" as="w" hint-placeholder-count="10"><span style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:{{ w.size }};font-weight:{{ w.w }};color:{{ w.c }};line-height:1.2">{{ w.t }}</span></sc-for>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:22px;font-weight:900;color:#155E52">ماذا فعلت بهم دقيقتاك؟</div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px">
+        <sc-for list="{{ meReact }}" as="r" hint-placeholder-count="7"><span style="display:flex;align-items:center;gap:10px;padding:12px 18px;border-radius:999px;background:{{ r.bg }};font-size:16px;font-weight:700"><span>{{ r.l }}</span><span style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:14px;font-weight:900;background:rgba(255,255,255,.7);border-radius:999px;padding:2px 9px">{{ r.n }}</span></span></sc-for>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:22px;font-weight:900;color:#155E52">بكلماتهم · 19 زميلًا</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px">
+        <sc-for list="{{ meNotes }}" as="n" hint-placeholder-count="8"><div style="background:{{ n.bg }};border-radius:18px;padding:18px;font-family:'Aref Ruqaa',serif;font-size:21px;font-weight:400;line-height:1.6;transform:rotate({{ n.rot }});box-shadow:0 10px 20px -14px rgba(0,0,0,.35);transition:transform .3s" style-hover="transform:rotate(0deg) scale(1.05)">{{ n.t }}</div></sc-for>
+      </div>
+    </div>
+    <div style="text-align:center;padding:50px 0 10px;display:flex;flex-direction:column;gap:6px"><span style="font-family:'Baloo Bhaijaan 2',sans-serif;font-size:clamp(28px,4vw,44px);font-weight:900;color:#155E52">الكلمة تنتهي</span><span style="font-size:clamp(28px,4vw,44px);font-weight:300;color:#1E7A6B">أثرها قد لا ينتهي</span></div>
+  </div>
+</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;timerSpeed&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;1&quot;,&quot;5&quot;,&quot;20&quot;],&quot;default&quot;:&quot;1&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;المعاينة&quot;},&quot;simulate&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;المعاينة&quot;},&quot;showPhone&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;المعاينة&quot;}}">
+const C={g:'#155E52',g2:'#1E7A6B',cream:'#F7FAF8',ink:'#123B35',mute:'#587470',lime:'#8EE5D1',peach:'#FFC9B5',lilac:'#DCD0F7',sky:'#CFF1E8',butter:'#FFE7A3',white:'#FFFFFF'};
+const PAST=[C.lime,C.peach,C.sky,C.butter,C.lilac,C.white];
+const STU=[
+['عبدالله','الفشل','الفشل في تجربة لا يجعلك إنسانًا فاشلًا',['محاولة','فرصة','ابدأ','فشل','مرة ثانية']],
+['فيصل','الصداقة','صديقك يشبه مستقبلك أكثر مما تتخيل',['صديق','مستقبل','اختيار','انتبه']],
+['يزن','التأجيل','بعدين كلمة صغيرة تأكل سنين',['بعدين','الوقت','الآن','عمر']],
+['مازن','القراءة','الكتاب الأول يفتح لك باب الثاني',['كتاب','باب','فضول','ابدأ']],
+['سلمان','الأم','اتصل بها قبل أن تحتاج إليها',['اتصل','أمي','قبل','حنان']],
+['تركي','الرياضة','جسدك يتذكر كل وعد أخلفته معه',['جسد','وعد','نوم','حركة']],
+['نواف','الجوال','الجوال ما يسرق وقتك، أنت تعطيه',['تعطيه','وقت','قرار','رأس مرفوع']],
+['خالد','الصدق','الكذبة الصغيرة تحتاج عشر كذبات تحرسها',['كذبة','صدق','ثقل','راحة']],
+['عمر','الأحلام','الحلم بدون موعد مجرد أمنية',['موعد','حلم','خطة','اكتبها']],
+['ريان','الامتنان','لاحظ الأشياء التي لا تلاحظ غيابها إلا بعد أن تذهب',['لاحظ','نِعم','شكر','غياب']],
+['بدر','التنمر','الكلمة التي نسيتها هو ما زال يحملها',['كلمة','يحملها','فسحة','انتبه']],
+['حمد','الوقت','ثلاث ساعات يوميًا تساوي شهرًا ونصف كل سنة',['ساعات','شهر','حساب','صدمة']],
+['سعود','القيادة','القائد أول من يتعب وآخر من يشتكي',['قائد','تعب','قدوة']],
+['راكان','الجد','جدي ما قرأ كتابًا، لكنه علمني أكثر من مكتبة',['جدي','حكمة','مكتبة','قصة']],
+['زياد','الخوف','الخوف يكبر كلما ابتعدت عنه',['اقترب','خوف','خطوة']],
+['مشاري','التطوع','ساعة من وقتك قد تكون يومًا كاملًا عند غيرك',['ساعة','غيرك','عطاء','جرّب']],
+['ماجد','الاعتذار','الاعتذار لا يصغّرك، يكبّر الذي أمامك فيك',['اعتذر','كِبر','شجاعة']],
+['هشام','الوطن','الوطن ليس مكانًا تسكنه فقط، بل مكان يسكنك',['يسكنك','وطن','انتماء','بيت']],
+['أنس','الصبر','البذرة لا تعتذر عن تأخرها',['بذرة','صبر','انتظر','نمو']],
+['إياد','البداية','لا تنتظر أن تكون جاهزًا، ابدأ وستجهز',['ابدأ','جاهز','الآن','خطوة']]];
+const NAMES=STU.map(s=>s[0]);
+const PERSONA=9;
+const SCENES=[
+{id:'lobby',ch:'00',title:'ادخل باسمك'},
+{id:'hook',ch:'01',title:'عندك 30 ثانية',timer:30},
+{id:'vote1',ch:'01',title:'مين أقنعك أكثر؟',act:'vote'},
+{id:'why',ch:'01',title:'ليش؟',act:'text',dark:1},
+{id:'army',ch:'02',title:'جيش واقف قبل المعركة',beats:6,dark:1},
+{id:'soldier',ch:'02',title:'الجندي يعرف',beats:4,dark:1},
+{id:'know',ch:'02',title:'الإنسان قد يعرف',beats:2},
+{id:'hadith',ch:'03',title:'حديث جابر رضي الله عنه',beats:3,dark:1},
+{id:'open4',ch:'04',title:'فكرة واحدة، أربع بدايات',beats:2},
+{id:'vote2',ch:'04',title:'أي بداية؟',act:'vote'},
+{id:'human',ch:'04',title:'ابدأ من الإنسان',beats:2,dark:1},
+{id:'fear',ch:'05',title:'كان خائفًا جدًا',beats:2,act:'text'},
+{id:'time',ch:'05',title:'الوقت يمر بسرعة',act:'text'},
+{id:'image',ch:'05',title:'الصورة تبقى',beats:2,dark:1},
+{id:'story',ch:'06',title:'القصة',beats:3},
+{id:'storych',ch:'06',title:'تحدي 30 ثانية',timer:30},
+{id:'poem',ch:'07',title:'بيت واحد',beats:2,dark:1},
+{id:'stay',ch:'07',title:'ليش بعض الجمل تبقى؟',beats:2},
+{id:'stayact',ch:'07',title:'خلّ الجملة تبقى',act:'text',dark:1},
+{id:'tone',ch:'08',title:'باقي عندك وقت',act:'guess',dark:1},
+{id:'tools',ch:'08',title:'الكلمات نفسها',beats:3},
+{id:'arch',ch:'09',title:'هندسة الدقيقتين',beats:6},
+{id:'ready',ch:'10',title:'الاستعداد',beats:3,dark:1},
+{id:'speak',ch:'P2',title:'دقيقتان'},
+{id:'end',ch:'END',title:'ماذا بقي؟',beats:3,dark:1},
+{id:'impact',ch:'END',title:'خريطة الأثر'},
+{id:'words',ch:'END',title:'الكلمة تنتهي',beats:4,dark:1}];
+const CH={'00':'الدخول','01':'البداية','02':'الكلمة التي تحرّك','03':'من السيرة','04':'لماذا اقتنعت؟','05':'أرني','06':'القصة','07':'كلمة تبقى','08':'أدوات الإلقاء تحمل المعنى','09':'هندسة الدقيقتين','10':'الاستعداد','P2':'الجزء الثاني · دقيقتان','END':'الختام'};
+const CHN={'P2':'ج2','END':'خ'};
+const VOL=[{l:'فيصل',s:'رحلات البر'},{l:'يزن',s:'مطعم الحي القديم'},{l:'مازن',s:'كرة السلة'}];
+const OPEN=[{k:'معلومة',t:'يقضي كثير من الناس ساعات يوميًا على هواتفهم'},{k:'سؤال',t:'لو أعطيتك كل يوم ثلاث ساعات إضافية… إيش بتسوي فيها؟'},{k:'مشهد',t:'تفتح جوالك عشان ترد على رسالة… وترفع رأسك بعد 47 دقيقة'},{k:'اعتراف',t:'أحيانًا أفتح الجوال وأنا أصلًا ما أعرف إيش أبغى منه'}];
+const EMO=['أمل','تحذير','طمأنينة','ندم','تحدٍ'];
+const TONE=[{n:'سلمان',m:1},{n:'تركي',m:0},{n:'نواف',m:3},{n:'خالد',m:2},{n:'عمر',m:4}];
+const W={vote1:[.5,.3,.2],vote2:[.12,.3,.43,.15]};
+const POOLS={
+why:['قصة','ثقة','مثال','حماس','ضحكني','قربها مني','كان مقتنعًا بما يقول','صوته','التفاصيل','صدقه','نظرته','قصير وواضح'],
+fear:['يده ترتجف','يناظر الباب كل شوي','صوته ما يطلع','يمسك يده بيده','يبلع ريقه قبل كل كلمة','رجله ما تثبت','يعدّ أنفاسه','نسي اسمه لما سألوه'],
+time:['رمشت، وصرت ثالث ثانوي','قهوتي بردت وأنا أقول بعد شوي','أخوي الصغير صار أطول مني','الإجازة خلصت وأنا للحين أخطط لها','آخر رسالة من جدي قبل سنتين','فتحت الجوال المغرب، ورفعت رأسي العشاء'],
+stayact:['كل صفحة تقرأها تعيش بها عمرًا ثانيًا','رضا والديك ما ينتظرك تكبر','اللي يطيح ويقوم، ما طاح','قل لي من صاحبك، أقل لك من بتصير','يمكن الباب الجاي هو المفتوح']};
+const PROMPTS={why:{q:'ليش أقنعك؟',h:'كلمة أو كلمتين'},fear:{q:'خلّني أعرف أنه خائف',h:'ممنوع: خائف، خوف'},time:{q:'الوقت يمر بسرعة خلّني أراه',h:'مشهد قصير، سطر واحد'},stayact:{q:'خلّ الجملة تبقى',h:'اختر فكرة وأعد صياغتها في سطر'}};
+const FB=['فكّرت','شعرت','ضحكت','تساءلت','اقتربت من فكرته','رغبت أن أفعل شيئًا','لم يصلني بعد'];
+const ARCH=[
+{t:'00:00',v:'أمسكني',d:['سؤال','مشهد','موقف','جملة'],bg:C.lime,g:20},
+{t:'00:20',v:'قرّبني',d:['خلّ الموضوع يدخل عالمي'],bg:C.peach,g:30},
+{t:'00:50',v:'أثبت لي',d:['قصة','مثال','تجربة','حجة'],bg:C.sky,g:35},
+{t:'01:25',v:'أعطني الجملة',d:['الجملة التي تريد أن تبقى معي'],bg:C.butter,g:20},
+{t:'01:45',v:'حرّكني',d:['أفكر؟','أشعر؟','أقرر؟','أفعل؟'],bg:C.lilac,g:15}];
+const KIT=[
+{n:'01',title:'الكلمة التي تحرّك',line:'الإنسان قد يعرف… ولم يتحرك بعد',quote:'الإنسان قد يعرف… ولم يتحرك بعد',moments:['جيش يعرف المعركة، وينتظر كلمة القائد','«كأنه منذر جيش»: المعنى حاضر في المتحدث قبل أن يصل'],try:'فكّر في شيء تعرفه جيدًا ولم تفعله بعد ما الكلمة التي كانت ستحرّكك؟'},
+{n:'02',title:'ابدأ من الإنسان',line:'لا تبدأ من الموضوع',quote:'لا تبدأ من الموضوع ابدأ من الإنسان',pairs:[{bad:'يقضي كثير من الناس ساعات يوميًا على هواتفهم',good:'تفتح جوالك عشان ترد على رسالة… وترفع رأسك بعد 47 دقيقة'}],moments:['معلومة','سؤال','مشهد','اعتراف'],try:'اكتب بدايتين لفكرة واحدة: واحدة بسؤال، وواحدة باعتراف'},
+{n:'03',title:'أرني',line:'لا تخبرني أنه خائف خلّني أراه',quote:'الصورة تبقى',pairs:[{bad:'كان خائفًا جدًا',good:'يناظر الباب كل شوي، وصوته ما يطلع'},{bad:'التنمر يؤثر نفسيًا على الإنسان',good:'يمكن أنت نسيت الكلمة اللي قلتها له في الفسحة… وهو إلى اليوم يتذكرها'}],try:'صِف «الوقت يمر بسرعة» دون أن تذكر الوقت'},
+{n:'04',title:'القصة',line:'موقف قصير ينقلني إلى داخل الفكرة',quote:'دخلت الفصل يومًا… ولقيت واحد من أصحابي جالس لحاله',moments:['لا تحتاج «كان يا ما كان»','15 إلى 20 ثانية تكفي','ابدأ من وسط المشهد'],try:'حوّل «فرصة ضاعت» إلى موقف في 30 ثانية'},
+{n:'05',title:'الجملة التي تبقى',line:'شيء يحمله المستمع بعد أن ينتهي الكلام',quote:'الرأي قبل شجاعة الشجعانِ، هو أولٌ وهي المحلُّ الثاني',pairs:[{bad:'استخدم وقتك جيدًا',good:'كل مرة تقول: بعدين… أنت تدفع من عمرك'}],moments:['بيت واحد عاش أكثر من ألف سنة'],try:'أعد صياغة «لا تستسلم» في سطر واحد يبقى'},
+{n:'06',title:'أدوات الإلقاء تحمل المعنى',line:'الكلمات نفسها والمعنى مختلف',quote:'باقي عندك وقت',moments:['الصوت','السكتة','النظرة','السرعة','الحضور'],try:'قل «باقي عندك وقت» مرة بأمل، ومرة بتحذير ماذا تغيّر؟'},
+{n:'07',title:'هندسة الدقيقتين',line:'أمسكني قرّبني أثبت لي أعطني الجملة حرّكني اسكت',quote:'عندك دقيقتان',arch:1,try:'ارسم دقيقتيك القادمتين على هذا الخط قبل أن تكتب أي كلمة'},
+{n:'08',title:'دقيقتي',line:'ما قلته، وما بقي عندهم',quote:STU[PERSONA][2],me:1,try:'اقرأ ما بقي عندهم هل هو ما أردت أن يبقى؟'}];
+const ME_NOTES=['لاحظت أشياء ما كنت ألاحظها','أمي في المطبخ كل يوم','الماء البارد بعد التعب','غياب الشيء يعلّمك قيمته','بشكر أبوي اليوم','النعم الصغيرة كثيرة','نَفَسي اللي ما ألاحظه','صحتي قبل ما أفقدها','قصة جدته وصلتني','لاحظ قبل أن يذهب','الشكر عادة يومية','كوب الشاي مع أبوي','الكهرباء، ما أحد ينتبه','وصلتني بهدوء','شكرًا على التذكير','صوته كان صادقًا','بيتنا، ببساطة','الضوء في غرفتي','أصحابي الآن'];
+const ME_CLOUD=[['لاحظ',8],['غياب',6],['نِعم',6],['شكر',5],['أمي',3],['أبوي',3],['صحتي',2],['قيمة',2],['الماء',2],['جدته',2],['هدوء',1],['بيتنا',1],['صادق',1],['الضوء',1],['أصحابي',1]];
+const ME_REACT=[['فكّرت',9],['شعرت',7],['اقتربت من فكرته',6],['رغبت أن أفعل شيئًا',5],['تساءلت',3],['ضحكت',1],['لم يصلني بعد',1]];
+let seed=11;const rnd=()=>{seed=(seed*16807)%2147483647;return seed/2147483647;};
+const ALLW=[].concat(...STU.map(s=>s[3]),['قصة','ثقة','صورة','موقف','سكتة','حضور','أثر','كلمة','ابدأ من الإنسان','الآن','أرني']);
+const WCOL=[C.cream,C.cream,C.lime,C.peach,C.lilac,C.cream,C.sky];
+const WPOS=ALLW.map((w,i)=>({x:5+rnd()*90,y:8+rnd()*84,s:1.1+rnd()*2.2,w:[300,500,800][i%3],c:WCOL[i%WCOL.length]}));
+const GPOS=ALLW.map((w,i)=>{const a=i*2.39996;const r=14+(i%6)*2.6+rnd()*2;return {x:50+Math.cos(a)*r*1.25,y:50+Math.sin(a)*r*1.55,s:1+((i*7)%10)/10*.9};});
+const fmt=t=>{t=Math.max(0,Math.ceil(t));return String(Math.floor(t/60)).padStart(2,'0')+':'+String(t%60).padStart(2,'0');};
+const pick=w=>{let r=rnd(),acc=0;for(let i=0;i<w.length;i++){acc+=w[i];if(r<acc)return i;}return w.length-1;};
+const freshPh=()=>({voted:null,sent:false,text:'',fbSel:[],fbText:'',fbSent:false,rTopic:'',rLine:''});
+const ROUTE=(typeof location!=='undefined'?(location.hash||'').replace('#',''):'');
+const ROUTES=['present','control','join'];
+const ordAct=a=>{const o={};SCENES.forEach(sc=>{if(a&&a[sc.id]&&a[sc.id]!=='idle')o[sc.id]=a[sc.id];});return o;};
+const norm=x=>({si:x.si||0,beat:x.beat||0,act:ordAct(x.act||{}),tone:{round:(x.tone||{}).round||0,reveal:!!(x.tone||{}).reveal},sp:{idx:(x.sp||{}).idx||0,phase:(x.sp||{}).phase||'next'},timer:x.timer?{total:x.timer.total||30,left:x.timer.left==null?(x.timer.total||30):x.timer.left,run:!!x.timer.run,endsAt:x.timer.endsAt||0}:null});
+const TS=()=>Date.now();
+
+class Component extends DCLogic {
+  state={mode:'console',si:0,beat:0,acts:{},joined:[],me:{inputName:'',name:'',joined:false},timer:{total:30,left:30,run:false},tone:{round:0,reveal:false},
+    sp:{idx:0,phase:'next',ready:false,fb:0,topic:'',line:''},phoneView:'audience',ph:freshPh(),kitOpen:null};
+  kitRef=React.createRef(); kitDetailRef=React.createRef();
+  componentDidMount(){
+    this.route=ROUTES.includes(ROUTE)?ROUTE:'';
+    if(this.route){this.setState({mode:this.route==='present'?'stage':this.route==='join'?'phone':'console'});
+      const tryInit=(n=0)=>{if(window.ATHAR_SUPABASE&&window.supabase&&window.AtharSync)this.initLive();else if(n<60)setTimeout(()=>tryInit(n+1),250);};tryInit();}
+    else{try{const s=JSON.parse(localStorage.getItem('athar-pos')||'null');if(s&&SCENES[s.si])this.go(s.si,s.beat||0,s.mode);}catch(e){}}
+    this.iv=setInterval(()=>this.tick(),250);
+    this.kh=e=>{const tg=e.target.tagName;if(tg==='INPUT'||tg==='TEXTAREA')return;const m=this.state.mode;if(m!=='console'&&m!=='stage')return;if(this.route==='present'||this.route==='join')return;
+      if(e.key==='ArrowLeft'||e.key===' '||e.key==='PageDown'){e.preventDefault();this.next();}
+      else if(e.key==='ArrowRight'||e.key==='PageUp'){e.preventDefault();this.prev();}};
+    window.addEventListener('keydown',this.kh);
+    this.rs=()=>this.forceUpdate();window.addEventListener('resize',this.rs);
+  }
+  componentWillUnmount(){clearInterval(this.iv);window.removeEventListener('keydown',this.kh);window.removeEventListener('resize',this.rs);}
+  componentDidUpdate(pp,ps){const s=this.state;if(!this.route&&(ps.si!==s.si||ps.beat!==s.beat||ps.mode!==s.mode))localStorage.setItem('athar-pos',JSON.stringify({si:s.si,beat:s.beat,mode:s.mode}));
+    if(s.live&&this.route==='control'&&this.R){const st={};Object.keys(s.acts).forEach(k=>{st[k]=s.acts[k].status;});
+      const p=norm({si:s.si,beat:s.beat,act:st,tone:s.tone,sp:s.sp,timer:s.timerRaw});const j=JSON.stringify(p);if(j!==this.lastJ){this.lastJ=j;this.R.child('state').set(p);}}}
+  now(){return Date.now()+(this.off||0);}
+  T(t){return {total:t.total,left:t.left,run:!!t.run,endsAt:t.run?this.now()+t.left*1000:0};}
+  initLive(){
+    if(this.R)return;
+    let uid=localStorage.getItem('athar-uid');if(!uid){uid='u'+Math.random().toString(36).slice(2,10);localStorage.setItem('athar-uid',uid);}this.uid=uid;this.off=0;
+    this.R=window.AtharSync.connect(window.ATHAR_SUPABASE,window.ATHAR_SESSION||'s1',v=>this.applyLive(v),c=>this.setState({conn:c}));
+    this.setState({live:true});
+  }
+  applyLive(v){
+    this.L=v;const st=norm(v.state||{}),parts=v.parts||{};
+    const joined=Object.entries(parts).sort((a,b)=>(a[1].t||0)-(b[1].t||0)).map(([id,p])=>({n:p.n,id,mine:id===this.uid}));
+    const acts={};
+    SCENES.forEach(sc=>{if(!sc.act)return;const id=sc.id,key=id==='tone'?'tone'+st.tone.round:id,n=id==='vote1'?3:id==='vote2'?4:5;
+      const votes=Array(n).fill(0);Object.values((v.votes||{})[key]||{}).forEach(k=>{if(votes[k]!=null)votes[k]++;});
+      const sh=(v.shown||{})[id]||{};
+      const resp=Object.entries((v.resp||{})[id]||{}).sort((a,b)=>(a[1].ts||0)-(b[1].ts||0)).map(([u,r])=>({t:r.t,a:r.a,id:u,shown:!!sh[u],mine:u===this.uid}));
+      acts[id]={status:st.act[id]||'idle',resp,votes};});
+    const rd=(v.ready||{})[st.sp.idx];
+    const up={joined,acts,si:Math.min(st.si,SCENES.length-1),beat:st.beat,tone:st.tone,timerRaw:st.timer,
+      sp:{idx:st.sp.idx,phase:st.sp.phase,ready:!!rd,topic:rd?rd.topic:'',line:rd?rd.line:'',fb:Object.keys((v.fb||{})[st.sp.idx]||{}).length}};
+    if(!st.timer)up.timer={total:30,left:30,run:false};
+    if(this.route==='join'){const p=parts[this.uid];up.me={...this.state.me,joined:!!p,name:p?p.n:''};}
+    if(this.route==='control')this.lastJ=JSON.stringify(st);
+    if(up.si!==this.state.si||up.sp.idx!==this.state.sp.idx||up.sp.phase!==this.state.sp.phase)up.ph=freshPh();
+    this.setState(up);
+  }
+  myPh(s,sc){if(!(s.live&&this.route==='join'))return s.ph;const L=this.L||{},u=this.uid,key=sc.id==='tone'?'tone'+s.tone.round:sc.id;
+    const vv=((L.votes||{})[key]||{})[u],rr=((L.resp||{})[sc.id]||{})[u],ff=((L.fb||{})[s.sp.idx]||{})[u];
+    return {...s.ph,voted:vv==null?null:vv,sent:!!rr,text:rr?rr.t:s.ph.text,fbSent:!!ff};}
+  act(id){const sc=SCENES.find(x=>x.id===id);const n=id==='vote1'?3:id==='vote2'?4:5;return this.state.acts[id]||{status:'idle',resp:[],votes:Array(n).fill(0)};}
+  setAct(id,a){this.setState(s=>({acts:{...s.acts,[id]:a}}));}
+  go(si,beat=0,mode){const sc=SCENES[si];const up={si,beat,ph:freshPh()};
+    if(sc.timer)up.timer={total:sc.timer,left:sc.timer,run:false};
+    if(sc.id==='speak')up.timer={total:120,left:this.state.sp.phase==='speaking'?this.state.timer.left:120,run:this.state.sp.phase==='speaking'&&this.state.timer.run};
+    if(mode)up.mode=mode;if(this.state.live)up.timerRaw=up.timer?this.T(up.timer):null;this.setState(up);}
+  next=()=>{const s=this.state,sc=SCENES[s.si],n=sc.beats||1;if(s.beat<n-1)this.setState({beat:s.beat+1});else if(s.si<SCENES.length-1)this.go(s.si+1);};
+  prev=()=>{const s=this.state;if(s.beat>0)this.setState({beat:s.beat-1});else if(s.si>0)this.go(s.si-1,(SCENES[s.si-1].beats||1)-1);};
+  tick(){
+    const s=this.state,sc=SCENES[s.si],spd=Number(this.props.timerSpeed??1)||1,live=(this.props.simulate??true)&&!s.live;
+    this.n=(this.n||0)+1;const up={};
+    if(s.live){const r=s.timerRaw;if(r){const left=r.run?Math.max(0,(r.endsAt-this.now())/1000):r.left;if(left!==s.timer.left||r.total!==s.timer.total||r.run!==s.timer.run)up.timer={total:r.total,left,run:r.run&&left>0};
+      if(this.route==='control'&&r.run&&left<=0){up.timerRaw={total:r.total,left:0,run:false,endsAt:0};if(sc.id==='speak'&&s.sp.phase==='speaking')up.sp={...s.sp,phase:'feedback'};}}}
+    else if(s.timer.run){const left=Math.max(0,s.timer.left-.25*spd);up.timer={...s.timer,left,run:left>0};
+      if(left<=0&&sc.id==='speak'&&s.sp.phase==='speaking')up.sp={...s.sp,phase:'feedback',fb:0};}
+    if(live&&this.n%3===0){
+      const a=s.acts[sc.id];
+      if(sc.act&&a&&a.status==='open'){
+        if(sc.act==='text'){const pool=POOLS[sc.id];const others=a.resp.filter(r=>!r.mine);if(others.length<pool.length&&rnd()<.55){const i=others.length;const shownN=a.resp.filter(r=>r.shown).length;
+          up.acts={...s.acts,[sc.id]:{...a,resp:[...a.resp,{t:pool[i],a:NAMES[(i*7+3)%20],shown:shownN<5,id:'r'+i+sc.id}]}};}}
+        else{const tot=a.votes.reduce((x,y)=>x+y,0);if(tot<19&&rnd()<.7){let w=W[sc.id];if(sc.id==='tone'){const m=TONE[s.tone.round].m;w=EMO.map((_,i)=>i===m?.6:.1);}
+          const v=[...a.votes];v[pick(w)]++;up.acts={...s.acts,[sc.id]:{...a,votes:v}};}}
+      }
+      if(sc.id==='speak'){
+        let sp=up.sp||s.sp;
+        if(sp.phase==='next'&&!sp.ready&&s.phoneView!=='speaker'){this.rd=(this.rd||0)+1;if(this.rd>5){this.rd=0;const st=STU[sp.idx];sp={...sp,ready:true,topic:st[1],line:st[2]};up.sp=sp;}}
+        if(sp.phase==='feedback'&&sp.fb<19&&rnd()<.75){up.sp={...sp,fb:Math.min(19,sp.fb+1+(rnd()<.3?1:0))};}
+      }
+    }
+    if(live&&sc.id==='lobby'&&this.n%3===0&&rnd()<.7){const left=NAMES.filter((n,i)=>i!==PERSONA&&!s.joined.some(j=>j.n===n));if(left.length)up.joined=[...s.joined,{n:left[Math.floor(rnd()*left.length)],mine:false}];}
+    if(Object.keys(up).length)this.setState(up);
+  }
+  toggleAct=()=>{const s=this.state,sc=SCENES[s.si],a=this.act(sc.id);this.setAct(sc.id,{...a,status:a.status==='open'?'closed':'open'});if(a.status!=='open')this.setState({ph:freshPh()});};
+  startSpeak=()=>this.setState(s=>({sp:{...s.sp,phase:'speaking',ready:true,topic:s.live?s.sp.topic:(s.sp.topic||STU[s.sp.idx][1]),line:s.live?s.sp.line:(s.sp.line||STU[s.sp.idx][2])},timer:{total:120,left:120,run:true},timerRaw:this.T({total:120,left:120,run:true}),ph:freshPh()}));
+  endSpeak=()=>this.setState(s=>({sp:{...s.sp,phase:'feedback',fb:0},timer:{...s.timer,left:0,run:false},timerRaw:this.T({total:120,left:0,run:false})}));
+  setSpeaker=i=>{this.rd=0;this.setState({sp:{idx:i,phase:'next',ready:false,fb:0,topic:'',line:''},timer:{total:120,left:120,run:false},timerRaw:this.T({total:120,left:120,run:false}),ph:freshPh()});};
+  nextSpeaker=()=>{const i=this.state.sp.idx;if(i<(this.rosterLen||20)-1)this.setSpeaker(i+1);else this.go(SCENES.findIndex(x=>x.id==='end'));};
+  openKit=i=>{this.setState({kitOpen:this.state.kitOpen===i?null:i},()=>requestAnimationFrame(()=>{const c=this.kitRef.current,d=this.kitDetailRef.current;if(c&&d&&this.state.kitOpen!=null)c.scrollTo({top:d.offsetTop-20,behavior:'smooth'});}));};
+  wordField(phase){
+    const h=React.createElement;
+    return h('div',{style:{position:'absolute',inset:0,opacity:phase===3?0:1,transition:'opacity 2.4s ease'}},ALLW.map((w,i)=>{
+      const p=WPOS[i],g=GPOS[i],gat=phase>=2;
+      return h('span',{key:i,style:{position:'absolute',left:(gat?g.x:p.x)+'%',top:(gat?g.y:p.y)+'%',transform:'translate(-50%,-50%)',fontSize:(gat?g.s:p.s)+'cqw',fontWeight:p.w,fontFamily:"'Baloo Bhaijaan 2',sans-serif",color:p.c,
+        opacity:phase===1?.28:gat?.95:.8,whiteSpace:'nowrap',transition:'left 2.8s cubic-bezier(.6,0,.2,1), top 2.8s cubic-bezier(.6,0,.2,1), font-size 2.8s, opacity 1.6s',transitionDelay:((i%14)*.06)+'s'}},
+        h('span',{style:{display:'inline-block',animation:`drift ${5+(i%5)}s ease-in-out ${-(i%7)}s infinite alternate`}},w));
+    }));
+  }
+  renderVals(){
+    const s=this.state,P=this.props,sc=SCENES[s.si],beat=s.beat,nb=sc.beats||1;
+    const is={[sc.id]:true},be={['e'+beat]:true},b={};for(let i=0;i<=beat;i++)b['b'+i]=true;
+    const a=this.act(sc.id),sp=s.sp,ph=this.myPh(s,sc),isSpeak=sc.id==='speak';
+    const spPhase={[sp.phase]:true};
+    const dark=isSpeak?sp.phase==='speaking':!!sc.dark;
+    const mode=s.mode,isConsole=mode==='console';const vw=typeof window==='undefined'?1400:window.innerWidth;const lay=vw>=1200?'wide':vw>=860?'mid':'narrow';const nar=lay==='narrow';
+    const tot=a.votes.reduce((x,y)=>x+y,0);
+    const v1=this.act('vote1'),t1=v1.votes.reduce((x,y)=>x+y,0);
+    const v2=this.act('vote2'),t2=v2.votes.reduce((x,y)=>x+y,0);
+    const pc=(n,t)=>t?Math.round(n/t*100):0;
+    const vote1Rows=VOL.map((o,i)=>{const p=pc(v1.votes[i],t1);return {...o,n:v1.votes[i],pct:p+'%',h:Math.max(p,3)+'%',c:[C.g,C.g2,'#3CC7B0'][i]};});
+    const showOpenGrid=(is.open4&&beat>=1)||!!is.vote2;
+    const openRows=OPEN.map((o,i)=>{const p=pc(v2.votes[i],t2);return {...o,num:'0'+(i+1),c:[C.white,C.peach,C.lime,C.lilac][i],rot:['-1deg','1.2deg','-.6deg','1deg'][i],delay:(i*.12)+'s',pct:p+'%',fill:is.vote2?p+'%':'0%',show:!!is.vote2&&t2>0};});
+    const shown=a.resp.filter(r=>r.shown);
+    const sizes=['4.4cqw','2.6cqw','3.4cqw','2.2cqw','3cqw','2.4cqw','3.8cqw','2cqw'];
+    const whyWords=is.why?shown.map((r,i)=>({t:r.t,size:sizes[i%sizes.length],c:i%3===0?C.lime:C.cream})):[];
+    const showNotes=!!(is.fear&&beat>=1)||!!is.time||!!is.stayact;
+    const notes=showNotes?shown.slice(-8).map((r,i)=>({t:r.t,a:r.a,bg:[C.butter,C.white,C.peach,C.sky,C.lime,C.lilac][i%6],rot:['-3deg','2deg','-1deg','3deg','-2deg','1deg'][i%6]})):[];
+    // tone
+    const tv=this.act('tone'),tt=tv.votes.reduce((x,y)=>x+y,0),tr=TONE[s.tone.round];
+    const toneRows=EMO.map((l,i)=>({l,pct:pc(tv.votes[i],tt)+'%',c:i===tr.m?C.lime:'rgba(247,250,248,.55)',w:i===tr.m?900:500}));
+    // timer
+    const tm=s.timer;
+    // speaker
+    const L=this.L||{},liveR=s.live&&s.joined.length>0;
+    const roster=liveR?s.joined.map((j,i)=>{const r=(L.ready||{})[i]||{};const fbs=Object.values((L.fb||{})[i]||{});const words=[...new Set(fbs.flatMap(f=>String(f.t||'').split(/\s+/)).filter(Boolean))].slice(0,6);return [j.n,r.topic||'',r.line||'',words.length?words:['لم يصل بعد']];}):STU;
+    const NM=roster.map(r=>r[0]);this.rosterLen=roster.length;
+    const st=roster[Math.min(sp.idx,roster.length-1)]||STU[0];
+    const pv=s.live&&this.route==='join'?((s.joined[sp.idx]||{}).mine?'speaker':'audience'):s.phoneView;
+    const spk={name:st[0],n:String(sp.idx+1).padStart(2,'0'),topic:sp.topic,line:sp.line};
+    const el=120-tm.left;
+    const spBg=el<30?'#155E52':el<60?'#176A5C':el<90?'#1A7061':'#1D7566';
+    const audIdx=sp.idx===PERSONA?10:PERSONA;
+    // phone
+    let pst='listen';
+    if(sc.act&&a.status==='open'){pst=sc.act==='text'?(ph.sent?'sent':'text'):(ph.voted!=null?'voted':'vote');}
+    if(isSpeak){if(pv==='speaker')pst=sp.phase==='next'?(sp.ready?'readyDone':'ready'):'stage';else pst=sp.phase==='feedback'?(ph.fbSent?'fbDone':'fb'):'listen';}
+    if(is.words&&beat===3)pst='end';
+    if(!s.me.joined)pst='join';
+    const ps={[pst]:true};
+    let listenTitle='استمع الآن',listenSub='المقدّم يتحدث ارفع رأسك';
+    if(isSpeak){if(sp.phase==='speaking'){listenTitle='يتحدث الآن';listenSub=st[0]+'. دقيقتان له وحده';}else{listenTitle='التالي: '+st[0];listenSub='استعد للاستماع';}}
+    const voteOptsSrc=sc.id==='vote1'?VOL.map(o=>({l:o.l,s:o.s})):sc.id==='vote2'?OPEN.map(o=>({l:o.k,s:o.t})):EMO.map(l=>({l,s:''}));
+    const phoneOpts=voteOptsSrc.map((o,i)=>({...o,pick:()=>{if(s.live){this.R.child('votes/'+(sc.id==='tone'?'tone'+s.tone.round:sc.id)+'/'+this.uid).set(i);return;}const aa=this.act(sc.id);const v=[...aa.votes];v[i]++;this.setAct(sc.id,{...aa,votes:v});this.setState(x=>({ph:{...x.ph,voted:i}}));}}));
+    const phoneQ=sc.id==='vote1'?'مين أقنعك أكثر؟':sc.id==='vote2'?'أي بداية خلتك تبغى تسمع الباقي؟':'ماذا وصلك من '+tr.n+'؟';
+    const prompt=PROMPTS[sc.id]||{q:'',h:''};
+    const textWarn=sc.id==='fear'&&/خائف|خوف|خايف/.test(ph.text);
+    const canSend=ph.text.trim().length>0&&!textWarn;
+    const fbWordsN=ph.fbText.trim()?ph.fbText.trim().split(/\s+/).length:0;
+    const canFb=ph.fbSel.length>0&&fbWordsN<=5;
+    const fbOpts=FB.map(l=>{const on=ph.fbSel.includes(l);return {l,bd:on?C.g:'rgba(21,94,82,.2)',bg:on?C.g:'transparent',fg:on?C.cream:C.ink,pick:()=>this.setState(x=>({ph:{...x.ph,fbSel:on?x.ph.fbSel.filter(y=>y!==l):[...x.ph.fbSel,l]}}))};});
+    const phDarkStates=['listen','voted','sent','readyDone','stage','fbDone'];
+    // presenter
+    const actKind=sc.act==='vote'?'تصويت':sc.act==='text'?'إجابات قصيرة':'تخمين';
+    const actStatus={idle:'لم يبدأ',open:'مفتوح',closed:'مغلق'}[a.status];
+    const actCount=sc.act==='text'?a.resp.length:tot;
+    const pVoteRows=voteOptsSrc.map((o,i)=>({l:o.l,n:a.votes[i]||0,pct:pc(a.votes[i]||0,tot)+'%'}));
+    const respList=a.resp.slice().reverse().map(r=>({...r,lbl:r.shown?'على الشاشة':'إظهار',bg:r.shown?'#DDF5EE':C.white,bd:r.shown?C.g:'transparent',fg:r.shown?C.g:C.mute,
+      toggle:()=>{if(s.live){this.R.child('shown/'+sc.id+'/'+r.id).set(r.shown?null:true);return;}const aa=this.act(sc.id);this.setAct(sc.id,{...aa,resp:aa.resp.map(x=>x.id===r.id?{...x,shown:!x.shown}:x)});}}));
+    const firstIdx={};SCENES.forEach((x,i)=>{if(firstIdx[x.ch]==null)firstIdx[x.ch]=i;});
+    const chapters=Object.keys(CH).map(k=>({n:CHN[k]||k,name:k==='P2'?'دقيقتان':CH[k],on:sc.ch===k,bg:sc.ch===k?C.g:'transparent',fg:sc.ch===k?C.cream:C.ink,go:()=>this.go(firstIdx[k])}));
+    const spPhaseLabel={next:'التحضير',speaking:'يلقي الآن',feedback:'أثر الجمهور'}[sp.phase];
+    const spMainLabel=sp.phase==='next'?'بدء الدقيقتين':sp.phase==='speaking'?'إنهاء الآن':(sp.idx<roster.length-1?'التالي: '+roster[sp.idx+1][0]:'إنهاء التجربة');
+    const spMain=sp.phase==='next'?this.startSpeak:sp.phase==='speaking'?this.endSpeak:this.nextSpeaker;
+    const fbList=NM.filter((_,i)=>i!==sp.idx).map((n,i)=>({n,bg:i<sp.fb?C.g:'rgba(21,94,82,.07)',fg:i<sp.fb?C.cream:C.mute}));
+    const spkGrid=NM.map((n,i)=>{const done=i<sp.idx,cur=i===sp.idx;return {name:n,bg:cur?C.lime:done?C.g:'transparent',fg:done?C.cream:C.ink,bd:cur?C.g:done?C.g:'rgba(21,94,82,.15)',go:()=>this.setSpeaker(i)};});
+    const kitCurRaw=s.kitOpen!=null?KIT[s.kitOpen]:null;
+    const kitCur=kitCurRaw?{...kitCurRaw,ac:PAST[s.kitOpen%5]===C.white?C.g:C.g2,hasPairs:!!kitCurRaw.pairs,hasMoments:!!kitCurRaw.moments,pairs:kitCurRaw.pairs||[],moments:kitCurRaw.moments||[]}:{n:'',title:'',quote:'',try:'',pairs:[],moments:[]};
+    const kitBgs=[C.g,C.lime,C.white,C.peach,C.sky,C.butter,C.g,C.lilac];
+    const kitItems=KIT.map((k,i)=>{const bg=kitBgs[i];const dk=bg===C.g;return {...k,bg,fg:dk?C.cream:C.ink,bd:s.kitOpen===i?C.ink:'transparent',rot:['-1deg','1deg','0deg','-1.5deg','1.2deg','-.5deg','.8deg','-1deg'][i],open:()=>this.openKit(i)};});
+    const maxF=8;
+    const meCloud=ME_CLOUD.map(([t,f],i)=>({t,size:(16+f/maxF*58)+'px',w:f>4?900:f>1?700:400,c:f>4?C.g:f>1?C.g2:C.mute}));
+    const modes=[['console','وحدة التحكم'],['stage','شاشة العرض'],['kit','حقيبتي'],['me','دقيقتي']].map(([k,l])=>({l,bg:mode===k?C.g:'transparent',fg:mode===k?C.cream:C.g,go:()=>this.setState({mode:k})}));
+    const nextSc=s.beat<nb-1?sc:SCENES[s.si+1];
+    const J=this.route==='join',PR=this.route==='present';
+    const origin=typeof location!=='undefined'&&/^https?:/.test(location.protocol)?location.origin+location.pathname.replace(/[^/]*$/,'').replace(/\/$/,''):'';
+    const joinUrl=origin?origin+'/join':'';
+    const RO=!this.route?{}:{isWork:true,isConsole:!J&&!PR,phoneOn:J,workPad:J||PR?'0':(nar?'12px':'18px'),workBg:PR?'#0B0F0D':J?'#F7FAF8':'#EAF3EF',
+      stageW:PR?'min(100vw, calc(100dvh * 1.7778))':(nar?'100%':'min(100%, calc((100vh - 150px) * 1.7778))'),stageR:PR?'0':'22px',phoneH:J?'100%':'600px'};
+    const RX={showChrome:!(J||PR),showTabs:!this.route,showStage:!J,notJoin:!J,showPhoneToggle:!!is.speak&&!J,
+      isLiveCtrl:this.route==='control',liveDot:s.live&&s.conn?'#3CC7B0':'#B4432F',
+      liveMsg:s.live?(s.conn?'متصل بقاعدة البيانات':'جارٍ الاتصال…'):'لم يُضبط ملف config.js بعد',
+      joinUrl,presentUrl:origin?origin+'/present':'',hasQr:!!joinUrl,noQr:!joinUrl,qrSrc:joinUrl?'https://api.qrserver.com/v1/create-qr-code/?size=400x400&margin=0&color=155E52&data='+encodeURIComponent(joinUrl):'',
+      resetSession:()=>{if(this.R&&window.confirm('مسح كل بيانات الجلسة؟'))this.R.remove();},
+      pfW:J?'100%':'auto',pfAR:J?'auto':'286/600',pfR:J?'0':'46px',pfPad:J?'0':'10px',piR:J?'0':'37px',sbOp:J?0:1,phAsideFlex:J?'1':'none'};
+    return {
+      modes,isWork:mode==='console'||mode==='stage',isConsole,isKit:mode==='kit',isMe:mode==='me',phoneOn:isConsole&&(P.showPhone??true)&&lay!=='mid',workDir:nar?'column':'row',workPad:nar?'12px':'18px',ctrlW:nar?'100%':'clamp(240px,26vw,330px)',ctrlOrder:nar?2:0,mainFlex:nar?'none':'1',phoneH:nar?'600px':'min(600px, calc(100vh - 170px))',
+      workBg:mode==='stage'?'#0B0F0D':'#EAF3EF',
+      stageW:nar?'100%':isConsole?'min(100%, calc((100vh - 150px) * 1.7778))':'min(100%, calc((100vh - 100px) * 1.7778))',stageR:isConsole?'22px':'10px',
+      cur:sc,curNum:CHN[sc.ch]||sc.ch,curCh:CH[sc.ch],beatLabel:(beat+1)+' / '+nb,
+      beatDots:Array.from({length:nb},(_,i)=>({bg:i<=beat?C.lime:'rgba(247,250,248,.18)'})),
+      nextTitle:nextSc?(nextSc===sc?'الخطوة '+(beat+2)+' من '+nb:nextSc.title):'النهاية',
+      sceneCount:'شاشة '+(s.si+1)+' من '+SCENES.length,
+      prev:this.prev,next:this.next,is,be,b,
+      hasAct:!!sc.act,actKind,actStatus,actPillBg:a.status==='open'?C.lime:'rgba(21,94,82,.08)',actPillFg:C.g,
+      actBtn:a.status==='idle'?'افتح النشاط':a.status==='open'?'أغلق النشاط':'أعد فتح النشاط',toggleAct:this.toggleAct,
+      actCount,actPct:Math.min(100,actCount/20*100)+'%',actIsVote:sc.act==='vote'||sc.act==='guess',actIsText:sc.act==='text',
+      pVoteRows,respList,chapters,
+      joinedCount:s.joined.length,joinedPct:(s.joined.length/20*100)+'%',joinedLabel:'الجلسة مباشرة · '+s.joined.length+' / 20 في الحصة',
+      joinedList:s.joined.map((j,i)=>({n:j.n,bg:j.mine?C.lime:['#CFF1E8','#FFE7A3','#FFC9B5','#DCD0F7'][i%4],bgDark:j.mine?C.lime:'rgba(247,250,248,.12)',fg:j.mine?C.g:C.cream})),
+      jn:s.me,joinBg:s.me.inputName.trim()?C.g:'rgba(21,94,82,.12)',joinFg:s.me.inputName.trim()?C.cream:C.mute,
+      onJoinName:e=>{const v=e.target.value;this.setState(x=>({me:{...x.me,inputName:v}}));},
+      doJoin:()=>{const nm=s.me.inputName.trim();if(!nm)return;if(s.live){this.R.child('parts/'+this.uid).set({n:nm,t:TS()});this.setState(x=>({me:{...x.me,name:nm}}));return;}this.setState(x=>({me:{...x.me,name:nm,joined:true},joined:[...x.joined.filter(j=>!j.mine),{n:nm,mine:true}]}));},respEmpty:a.resp.length===0,
+      showAll:()=>{if(s.live){const u={};a.resp.forEach(r=>{u['shown/'+sc.id+'/'+r.id]=true;});if(a.resp.length)this.R.update(u);return;}const aa=this.act(sc.id);this.setAct(sc.id,{...aa,resp:aa.resp.map(x=>({...x,shown:true}))});},
+      tone:s.tone,toneN:s.tone.round+1,toneName:tr.n,toneMeant:EMO[tr.m],toneRows,toneHidden:!s.tone.reveal,toneCount:tt,
+      revealBtn:s.tone.reveal?'إخفاء النتيجة':'إظهار النتيجة',
+      toggleReveal:()=>this.setState(x=>({tone:{...x.tone,reveal:!x.tone.reveal}})),
+      nextRound:()=>{const r=(s.tone.round+1)%5;this.setState(x=>({tone:{round:r,reveal:false},acts:{...x.acts,tone:{status:'open',resp:[],votes:[0,0,0,0,0]}},ph:freshPh()}));},
+      hasTimer:!!sc.timer,timerText:fmt(tm.left),timerSec:String(Math.ceil(tm.left)),timerDeg:(tm.left/tm.total*360)+'deg',ringSize:tm.run?'22cqw':'18cqw',
+      timerBtn:tm.run?'إيقاف':'ابدأ',toggleTimer:()=>s.live?this.setState({timerRaw:this.T({total:tm.total,left:tm.left<=0?tm.total:tm.left,run:!tm.run})}):this.setState(x=>({timer:{...x.timer,run:!x.timer.run,left:x.timer.left<=0?x.timer.total:x.timer.left}})),
+      resetTimer:()=>s.live?this.setState({timerRaw:this.T({total:tm.total,left:tm.total,run:false})}):this.setState(x=>({timer:{...x.timer,left:x.timer.total,run:false}})),
+      votedLabel:'صوّت '+t1+' من 20',votedLabel2:'صوّت '+t2+' من 20',vote1Rows,openRows,showOpenGrid,openBig:!!is.open4&&beat===0,
+      whyWords,whyEmpty:whyWords.length===0,armyDim:beat>=5?.35:1,titleW:showNotes?'40cqw':'70cqw',
+      showNotes,notes,notesEmpty:notes.length===0,notesBd:dark?'rgba(247,250,248,.3)':'rgba(21,94,82,.3)',notesFg:dark?C.cream:C.g,
+      archSegs:ARCH.map((x,i)=>({...x,num:'0'+(i+1),on:!!b['b'+i]})),archAll:ARCH.map(x=>({...x,dj:x.d.join(' ')})),
+      sp,spk,spPhase,spNotReady:!sp.ready,spBg,spProg:(el/120*100)+'%',
+      quarters:[30,60,90,120].map(q=>el>=q?C.lime:'transparent'),
+      spDots:NM.map((_,i)=>i<sp.idx?C.g:i===sp.idx?C.lime:'rgba(21,94,82,.12)'),
+      fbDots:Array.from({length:Math.max(1,roster.length-1)},(_,i)=>i<sp.fb?C.g:'rgba(21,94,82,.12)'),
+      spPhaseLabel,spMainLabel,spMain,spReadyLabel:sp.ready?'جاهز · '+(sp.topic||st[1]):'لم يضغط «أنا جاهز» بعد',fbList,spkGrid,
+      goImpact:()=>this.go(SCENES.findIndex(x=>x.id==='impact')),
+      impact:roster.map((x,i)=>({name:x[0],line:x[2],words:x[3],bg:[C.lime,C.white,C.peach,C.sky,C.butter,C.lilac,C.white][i%7],rot:['-1deg','.8deg','-.4deg','1.2deg','-.8deg'][i%5],delay:(i*.06)+'s'})),
+      wordField:is.words?this.wordField(beat):null,
+      chromeOn:!(isSpeak&&sp.phase==='speaking')&&!(is.words&&beat===3),chromeInk:dark?C.cream:C.g,
+      chromeCh:sc.ch==='P2'||sc.ch==='END'?CH[sc.ch]:sc.ch+' · '+CH[sc.ch],
+      progW:((s.si+(beat+1)/nb)/SCENES.length*100).toFixed(1)+'%',
+      phoneOwner:isSpeak&&s.phoneView==='speaker'?st[0]+' (المتحدث)':(isSpeak?NAMES[audIdx]:(s.me.name||'طالب جديد')),
+      audBg:s.phoneView!=='speaker'?C.white:'transparent',spkBg:s.phoneView==='speaker'?C.white:'transparent',
+      viewAud:()=>this.setState({phoneView:'audience'}),viewSpk:()=>this.setState({phoneView:'speaker'}),
+      ps,phInk:phDarkStates.includes(pst)?C.cream:C.ink,phoneCh:sc.ch==='P2'||sc.ch==='END'?CH[sc.ch]:sc.ch+' · '+CH[sc.ch],
+      listenTitle,listenSub,phoneQ,phoneOpts,myPick:ph.voted!=null?voteOptsSrc[ph.voted].l:'',
+      ph,prompt,textWarn,sendBg:canSend?C.g:'rgba(21,94,82,.12)',sendFg:canSend?C.cream:C.mute,
+      onText:e=>{const v=e.target.value;this.setState(x=>({ph:{...x.ph,text:v}}));},
+      sendText:()=>{if(!canSend)return;if(s.live){this.R.child('resp/'+sc.id+'/'+this.uid).set({t:ph.text.trim(),a:s.me.name||'',ts:TS()});return;}const aa=this.act(sc.id);this.setAct(sc.id,{...aa,resp:[...aa.resp,{t:ph.text.trim(),a:NAMES[PERSONA]+' (أنت)',shown:true,mine:true,id:'me'+Date.now()}]});this.setState(x=>({ph:{...x.ph,sent:true}}));},
+      spkPreset:{topic:st[1],line:st[2]},
+      onTopic:e=>{const v=e.target.value;this.setState(x=>({ph:{...x.ph,rTopic:v}}));},
+      onLine:e=>{const v=e.target.value;this.setState(x=>({ph:{...x.ph,rLine:v}}));},
+      imReady:()=>s.live?this.R.child('ready/'+sp.idx).set({topic:ph.rTopic||'',line:ph.rLine||''}):this.setState(x=>({sp:{...x.sp,ready:true,topic:x.ph.rTopic||st[1],line:x.ph.rLine||st[2]}})),
+      stageTitle:sp.phase==='speaking'?'ضع جوالك جانبًا':'انتهت دقيقتاك',stageSub:sp.phase==='speaking'?'المسرح لك':'الأثر يصلك بعد الجلسة في «دقيقتي»',
+      fbOpts,fbWords:fbWordsN,fbWordsC:fbWordsN>5?'#B4432F':C.mute,fbSendBg:canFb?C.g:'rgba(21,94,82,.12)',fbSendFg:canFb?C.cream:C.mute,
+      onFbText:e=>{const v=e.target.value;this.setState(x=>({ph:{...x.ph,fbText:v}}));},
+      sendFb:()=>{if(!canFb)return;if(s.live){this.R.child('fb/'+sp.idx+'/'+this.uid).set({sel:ph.fbSel,t:ph.fbText.trim()});return;}this.setState(x=>({ph:{...x.ph,fbSent:true},sp:{...x.sp,fb:Math.min(19,x.sp.fb+1)}}));},
+      goKit:()=>this.setState({mode:'kit'}),goMe:()=>this.setState({mode:'me'}),
+      kitRef:this.kitRef,kitDetailRef:this.kitDetailRef,kitItems,kitHasOpen:!!kitCurRaw,kitCur,kitIsArch:!!(kitCurRaw&&kitCurRaw.arch),kitIsMe:!!(kitCurRaw&&kitCurRaw.me),
+      closeKit:()=>this.setState({kitOpen:null}),
+      me:{name:STU[PERSONA][0],topic:STU[PERSONA][1],line:STU[PERSONA][2]},meCloud,
+      meReact:ME_REACT.map(([l,n],i)=>({l,n,bg:[C.lime,C.peach,C.sky,C.butter,C.lilac,C.white,'#EDE6D8'][i]})),
+      meNotes:ME_NOTES.map((t,i)=>({t,bg:[C.butter,C.white,C.peach,C.sky,C.lime,C.lilac][i%6],rot:['-2deg','1.5deg','-.5deg','2deg','-1.2deg','.6deg'][i%6]})),
+      ...RX,...RO
+    };
+  }
+}
+</script>
+</body>
+</html>
